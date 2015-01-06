@@ -2,19 +2,25 @@ package com.bunneh.game.objects;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 
-public class Floor extends GameObject {
+public class Rock extends Enemy {
 	
-	private Rectangle rect;
+	private Vector2 velocity;
 
-	public Floor(Rectangle floorRect) {
-		this.rect = floorRect;
+	public Rock(Rectangle rect, Vector2 velocity) {
+		super(rect);
+		this.health = 20;
+		this.velocity = velocity;
 	}
 
 	@Override
 	public void update() {
-		// TODO Auto-generated method stub
+		updatePosition();
+	}
 
+	private void updatePosition() {
+		rect.y += velocity.y;
 	}
 
 	@Override
@@ -36,13 +42,18 @@ public class Floor extends GameObject {
 	}
 
 	@Override
-	public Rectangle getRect() {
-		return this.rect;
-	}
-
-	@Override
 	public boolean collided(GameObject target) {
-		// TODO Auto-generated method stub
+		if(target instanceof Bullet) {
+			health -= ((Bullet) target).getAttackPower();
+			if(health <= 0) {
+				destroy = true;
+			}
+			return true;
+		}
+		if(target instanceof Floor) {
+			destroy = true;
+			return true;
+		}
 		return false;
 	}
 

@@ -10,6 +10,7 @@ public class Bullet extends GameObject {
 	private float x, y;
 	private float bulletWidth = 2f;
 	private float bulletHeight = 4f;
+	private int attackPower = 5;
 	
 	private Rectangle rect;
 	
@@ -24,8 +25,8 @@ public class Bullet extends GameObject {
 
 	@Override
 	public void update() {
-		checkOffScreenDestroy();
 		if(needsDestroy()) return;
+		if(checkOffScreenDestroy()) return;;
 		updatePosition();
 	}
 
@@ -34,10 +35,12 @@ public class Bullet extends GameObject {
 		rect.y += velocity.y;
 	}
 
-	private void checkOffScreenDestroy() {
+	private boolean checkOffScreenDestroy() {
 		if(rect.y > BunnehStormGame.V_HEIGHT/2) {
 			destroy = true;
+			return true;
 		}
+		return false;
 	}
 
 	@Override
@@ -59,6 +62,23 @@ public class Bullet extends GameObject {
 	@Override
 	public Rectangle getRect() {
 		return this.rect;
+	}
+
+	@Override
+	public boolean collided(GameObject target) {
+		if(target instanceof Enemy) {
+			destroy = true;
+			return true;
+		}
+		return false;
+	}
+
+	public int getAttackPower() {
+		return 5;
+	}
+
+	public void setAttackPower(int attackPower) {
+		this.attackPower = attackPower;
 	}
 
 }

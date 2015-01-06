@@ -16,6 +16,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.bunneh.game.BunnehStormGame;
 import com.bunneh.game.InputAdapter;
+import com.bunneh.game.objects.EnemySpawnerContainer;
 import com.bunneh.game.objects.Floor;
 import com.bunneh.game.objects.GameObject;
 import com.bunneh.game.objects.Player;
@@ -29,6 +30,8 @@ public class PlayScreen implements Screen {
 	
 	public static Array<GameObject> gameObjects;
 
+	private static boolean gameOver = false;
+
 	private final float timestep = 1 / 60f;
 	private float timeAccum = 0f;
 
@@ -40,11 +43,11 @@ public class PlayScreen implements Screen {
 	private OrthographicCamera camera;
 	private SpriteBatch batch;
 	private ShapeRenderer debugRender;
-	private BitmapFont font;
-	
-	private Player player;
+	private BitmapFont font; private Player player;
+	private EnemySpawnerContainer esc;
 	
 	public PlayScreen(BunnehStormGame game) {
+		gameOver = false;
 		this.game = game;
 	}
 
@@ -54,6 +57,7 @@ public class PlayScreen implements Screen {
 		camera = new OrthographicCamera(game.V_WIDTH, game.V_HEIGHT);
 		batch = new SpriteBatch();
 		font = new BitmapFont();
+		font.setScale(0.8f);
 		
 		if(game.debugRender) debugRender = new ShapeRenderer();
 		
@@ -73,8 +77,19 @@ public class PlayScreen implements Screen {
 		player = new Player(playerRect);
 		player.setXboundaries(-game.V_WIDTH/2, (game.V_WIDTH/2)-playerRect.width);
 		
-		// TODO Create the spawn points for enemies/obstacles
-		
+		// Create the spawn points for enemies/obstacles
+		 esc = new EnemySpawnerContainer();
+		RockSpawner rs = new RockSpawner(-BunnehStormGame.V_WIDTH/2, (BunnehStormGame.V_WIDTH/2)-5f, 4f);
+		rs.setFallSpeed(0.6f);
+		rs.setSize(10f, 10f);
+		rs.setIncreaseSpawnInterval(true);
+		rs.setSpawnIntervalIncrement(0.08f);
+		rs.setSpawnIntervalMin(0.5f);
+		rs.setIncrementFallSpeed(true);
+		rs.setFallSpeedIncrement(0.08f);
+		rs.setFallSpeedMax(5f);
+		esc.addEnemySpawner(rs);
+
 		// Create input multiplexer
 		createInput();
 
@@ -106,7 +121,13 @@ public class PlayScreen implements Screen {
 	public void render(float delta) {
 		Gdx.gl.glClearColor(backColor.r, backColor.g, backColor.b, backColor.a);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+		if(gameOver) {
+			gotoGameOverScreen();
+			return;
+		}
 		
+		esc.update(delta);
 		timeAccum += delta;
 		while(timeAccum >= timestep) {
 			for(int i = 0 ; i < gameObjects.size ; i++) {
@@ -138,8 +159,10 @@ public class PlayScreen implements Screen {
 				debugRender.rect(rect.x, rect.y, rect.width, rect.height);
 			}
 			debugRender.end();
+			batch.setProjectionMatrix(camera.combined);
 			batch.begin();
-			font.draw(batch, "Screen objects: " + gameObjects.size, 10, game.V_HEIGHT*2);
+			//font.draw(batch, "Screen objects: " + gameObjects.size, 10, game.V_HEIGHT*2);
+			font.draw(batch, "Screen objects: " + gameObjects.size, -game.V_WIDTH/2, game.V_HEIGHT/2);
 			batch.end();
 			
 		} else {
@@ -150,17 +173,31 @@ public class PlayScreen implements Screen {
 			}
 			batch.end();
 		}
+		
 	}
 
+
+
 	private void checkCollisions(GameObject go, int index) {
-		// TODO Auto-generated method stub
-		
+		for(int j = 0 ; j < gameObjects.size ; j++) {
+			if(j == index) continue;
+			if(go instanceof Floor) continue;
+			// Check rectangle overlap
+			GameObject target = gameObjects.get(j);
+			Rectangle targetRect = target.getRect();
+			if(targetRect.overlaps(go.getRect())) {
+				// Collision
+				go.collided(target);
+				target.collided(go);
+			}
+		}
 	}
 
 	@Override
 	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
-
+		// Somehow keep aspect ratio...
+		float aspectRatio = (float) width / (float) height;
+		camera = new OrthographicCamera(game.V_WIDTH * aspectRatio, game.V_HEIGHT);
 	}
 
 	@Override
@@ -180,6 +217,10 @@ public class PlayScreen implements Screen {
 		dispose();
 	}
 
+	private void gotoGameOverScreen() {
+		game.setScreen(game.getGameOverScreen());
+	}
+
 	@Override
 	public void dispose() {
 		if(gameObjects.size > 0) {
@@ -192,6 +233,12 @@ public class PlayScreen implements Screen {
 		if(font != null) font.dispose();
 		gameObjects.clear();
 		batch.dispose();
+		Gdx.input.setInputProcessor(null);
+	}
+
+	
+	public static void setGameOver(boolean over) {
+		gameOver = over;
 	}
 
 }

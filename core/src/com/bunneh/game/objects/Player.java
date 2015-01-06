@@ -140,4 +140,13 @@ public class Player extends GameObject {
 		this.movSpeed = speed;
 	}
 
+	@Override
+	public boolean collided(GameObject target) {
+		if(target instanceof Rock) {
+			PlayScreen.setGameOver(true);
+			return true;
+		}
+		return false;
+	}
+
 }

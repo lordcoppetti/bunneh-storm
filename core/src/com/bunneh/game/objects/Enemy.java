@@ -3,24 +3,34 @@ package com.bunneh.game.objects;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 
-public abstract class GameObject {
+public abstract class Enemy extends GameObject {
 	
-	protected boolean destroy = false;
-
-	public abstract void update();
+	protected Rectangle rect;
 	
-	public abstract void render(SpriteBatch batch);
-
-	public abstract void render(SpriteBatch batch, float alphaModulation);
+	protected int health = 20;
 	
-	public boolean needsDestroy() {
-		return this.destroy;
+	public Enemy(Rectangle rect) {
+		this.rect = rect;
 	}
 
+	@Override
+	public abstract void update();
+
+	@Override
+	public abstract void render(SpriteBatch batch);
+
+	@Override
+	public abstract void render(SpriteBatch batch, float alphaModulation);
+
+	@Override
 	public abstract void dispose();
-	
-	public abstract Rectangle getRect();
-	
+
+	@Override
+	public Rectangle getRect() {
+		return this.rect;
+	}
+
+	@Override
 	public abstract boolean collided(GameObject target);
-	
+
 }
