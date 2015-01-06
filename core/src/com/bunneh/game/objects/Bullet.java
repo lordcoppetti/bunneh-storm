@@ -17,9 +17,10 @@ public class Bullet extends GameObject {
 	private Vector2 velocity = new Vector2(0, 0);
 	private float bulletSpeed = 4f;
 
-	public Bullet(float x, float y) {
+	public Bullet(int attackPower, float x, float y) {
 		this.x = x;
 		this.y = y;
+		this.attackPower = attackPower;
 		rect = new Rectangle(x-bulletWidth/2, y, bulletWidth, bulletHeight);
 	}
 

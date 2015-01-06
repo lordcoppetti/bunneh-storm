@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
 import com.bunneh.game.screens.PlayScreen;
 
 public class Player extends GameObject {
@@ -20,24 +19,19 @@ public class Player extends GameObject {
 	private float movSpeed = 2f;
 	
 	private int lives = 3;
+	private int attackPower = 5;
 	
 	// Control stuff for firing
 	private boolean fireRequested = false;
 	private float fireDelayMs = 0.3f;
 	private float fireCounter = fireDelayMs;
 	
-	public static enum MovementState {
-		MovingLeft,
-		MovingRight,
-		Idle,
-	}
-
-	private MovementState state;
+	private boolean movingLeft;
+	private boolean movingRight;
 
 	
 	public Player(Rectangle rect) {
 		this.rect = rect;
-		this.setState(MovementState.Idle);
 	}
 
 	@Override
@@ -49,23 +43,16 @@ public class Player extends GameObject {
 
 
 	private void updatePosition() {
-		if(state == MovementState.MovingLeft) {
-			velocity.x = -movSpeed;
-		}
-		if(state == MovementState.MovingRight) {
-			velocity.x = movSpeed;
-			
-		}
-		if(state == MovementState.Idle) {
-			velocity.x = 0f;
-		}
+		velocity.x = 0;
+		if(movingLeft) velocity.x = -movSpeed;
+		if(movingRight) velocity.x = movSpeed;
 
 		float newX = rect.x += velocity.x;
 
-		if(newX <= leftBoundary && state != MovementState.MovingRight) {
+		if(newX <= leftBoundary) {
 			newX = leftBoundary;
 		}
-		if(newX >= rightBoundary && state != MovementState.MovingLeft) {
+		if(newX >= rightBoundary) {
 			newX = rightBoundary;
 		}
 
@@ -84,7 +71,7 @@ public class Player extends GameObject {
 	private void fire() {
 		fireRequested = false;
 		// TODO Fire fucking bullets!
-		Bullet newBullet = new Bullet(rect.x + (rect.width/2), rect.y + rect.height);
+		Bullet newBullet = new Bullet(attackPower, rect.x + (rect.width/2), rect.y + rect.height);
 		PlayScreen.gameObjects.add(newBullet);
 	}
 
@@ -128,25 +115,42 @@ public class Player extends GameObject {
 		this.lives = lives;
 	}
 
-	public MovementState getState() {
-		return state;
-	}
-
-	public void setState(MovementState state) {
-		this.state = state;
-	}
-	
 	public void setMovementSpeed(float speed) {
 		this.movSpeed = speed;
+	}
+
+	public int getAtkPow() {
+		return this.attackPower;
 	}
 
 	@Override
 	public boolean collided(GameObject target) {
 		if(target instanceof Rock) {
-			PlayScreen.setGameOver(true);
+			lives -= 1;
+			target.destroy = true;
+			if(lives < 0) {
+				// cap it
+				lives = 0;
+				PlayScreen.setGameOver(true);
+			}
 			return true;
 		}
 		return false;
 	}
+
+	public void moveLeft(boolean move) {
+		this.movingLeft = move;
+		if(move) {
+			this.movingRight = false;
+		}
+	}
+
+	public void moveRight(boolean move) {
+		this.movingRight = move;
+		if(move) {
+			this.movingLeft = false;
+		}
+	}
+
 
 }

@@ -13,18 +13,25 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.bunneh.game.BunnehStormGame;
 import com.bunneh.game.InputAdapter;
 import com.bunneh.game.objects.EnemySpawnerContainer;
 import com.bunneh.game.objects.Floor;
 import com.bunneh.game.objects.GameObject;
+import com.bunneh.game.objects.Hud;
 import com.bunneh.game.objects.Player;
 
 /*
  * This PlayScreen doesn't use box2d or any physics engine.
  * It doesn't even use a Stage to manage game objects.
  * Also does collisions by rectangle overlap.
+ */
+
+/*
+ * TODO: Refactor RockSpawner into something easier and more flexible to maintain
+ * TODO: HUD with basic data
  */
 public class PlayScreen implements Screen {
 	
@@ -45,6 +52,7 @@ public class PlayScreen implements Screen {
 	private ShapeRenderer debugRender;
 	private BitmapFont font; private Player player;
 	private EnemySpawnerContainer esc;
+	private Hud hud;
 	
 	public PlayScreen(BunnehStormGame game) {
 		gameOver = false;
@@ -58,6 +66,9 @@ public class PlayScreen implements Screen {
 		batch = new SpriteBatch();
 		font = new BitmapFont();
 		font.setScale(0.8f);
+		hud = new Hud(font);
+		hud.setPlayerLivesPos(new Vector2(-game.V_WIDTH/2.2f, -game.V_HEIGHT/2.2f));
+		hud.setPlayerAtkPowPos(new Vector2(game.V_WIDTH/3.5f, hud.getPlayerLivesPos().y));
 		
 		if(game.debugRender) debugRender = new ShapeRenderer();
 		
@@ -76,6 +87,7 @@ public class PlayScreen implements Screen {
 				playerWidth, playerHeight);
 		player = new Player(playerRect);
 		player.setXboundaries(-game.V_WIDTH/2, (game.V_WIDTH/2)-playerRect.width);
+		hud.setPlayer(player);
 		
 		// Create the spawn points for enemies/obstacles
 		 esc = new EnemySpawnerContainer();
@@ -102,15 +114,19 @@ public class PlayScreen implements Screen {
 				new InputAdapter() {
 					@Override
 					public boolean keyDown(int keycode) {
-						if(keycode == Keys.A) player.setState(Player.MovementState.MovingLeft);
-						if(keycode == Keys.D) player.setState(Player.MovementState.MovingRight);
+						//if(keycode == Keys.A) player.setState(Player.MovementState.MovingLeft);
+						//if(keycode == Keys.D) player.setState(Player.MovementState.MovingRight);
+						if(keycode == Keys.A) player.moveLeft(true);
+						if(keycode == Keys.D) player.moveRight(true);
 						if(keycode == Keys.SPACE) player.requestFire();
 						return true;
 					}
 					@Override
 					public boolean keyUp(int keycode) {
-						if(keycode == Keys.A && !Gdx.input.isKeyPressed(Keys.D)) player.setState(Player.MovementState.Idle);
-						if(keycode == Keys.D && !Gdx.input.isKeyPressed(Keys.A)) player.setState(Player.MovementState.Idle);
+						//if(keycode == Keys.A && !Gdx.input.isKeyPressed(Keys.D)) player.setState(Player.MovementState.Idle);
+						//if(keycode == Keys.D && !Gdx.input.isKeyPressed(Keys.A)) player.setState(Player.MovementState.Idle);
+						if(keycode == Keys.A) player.moveLeft(false);
+						if(keycode == Keys.D) player.moveRight(false);
 						return true;
 					}
 				}
@@ -161,8 +177,8 @@ public class PlayScreen implements Screen {
 			debugRender.end();
 			batch.setProjectionMatrix(camera.combined);
 			batch.begin();
-			//font.draw(batch, "Screen objects: " + gameObjects.size, 10, game.V_HEIGHT*2);
 			font.draw(batch, "Screen objects: " + gameObjects.size, -game.V_WIDTH/2, game.V_HEIGHT/2);
+			hud.render(batch);
 			batch.end();
 			
 		} else {
