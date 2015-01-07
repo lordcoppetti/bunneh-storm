@@ -29,16 +29,27 @@ public class Player extends GameObject {
 	private boolean movingLeft;
 	private boolean movingRight;
 
+	private boolean invulnerable;
+	private float invulnerableTimer = 0f;
+	private float invulnerableLength = 1f; // 1 second
+
 	
 	public Player(Rectangle rect) {
 		this.rect = rect;
 	}
 
 	@Override
-	public void update() {
+	public void update(float delta) {
 		if(needsDestroy()) return;
+		if(invulnerable) {
+			invulnerableTimer += delta;
+			if(invulnerableTimer >= invulnerableLength) {
+				invulnerable = false;
+				invulnerableTimer = 0f;
+			}
+		}
 		updatePosition();
-		updateFireRequest();
+		updateFireRequest(delta);
 	}
 
 
@@ -59,8 +70,8 @@ public class Player extends GameObject {
 		rect.x = newX;
 	}
 
-	private void updateFireRequest() {
-		fireCounter += Gdx.graphics.getDeltaTime();
+	private void updateFireRequest(float delta) {
+		fireCounter += delta;
 		if(!fireRequested) return;
 		if(fireCounter >= fireDelayMs) {
 			fire();
@@ -125,8 +136,10 @@ public class Player extends GameObject {
 
 	@Override
 	public boolean collided(GameObject target) {
+		if(invulnerable) return false;
 		if(target instanceof Rock) {
 			lives -= 1;
+			invulnerable = true;
 			target.destroy = true;
 			if(lives < 0) {
 				// cap it

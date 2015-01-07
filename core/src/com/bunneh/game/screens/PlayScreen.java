@@ -31,7 +31,6 @@ import com.bunneh.game.objects.Player;
 
 /*
  * TODO: Refactor RockSpawner into something easier and more flexible to maintain
- * TODO: HUD with basic data
  */
 public class PlayScreen implements Screen {
 	
@@ -50,7 +49,8 @@ public class PlayScreen implements Screen {
 	private OrthographicCamera camera;
 	private SpriteBatch batch;
 	private ShapeRenderer debugRender;
-	private BitmapFont font; private Player player;
+	private BitmapFont font;
+	private Player player;
 	private EnemySpawnerContainer esc;
 	private Hud hud;
 	
@@ -114,8 +114,6 @@ public class PlayScreen implements Screen {
 				new InputAdapter() {
 					@Override
 					public boolean keyDown(int keycode) {
-						//if(keycode == Keys.A) player.setState(Player.MovementState.MovingLeft);
-						//if(keycode == Keys.D) player.setState(Player.MovementState.MovingRight);
 						if(keycode == Keys.A) player.moveLeft(true);
 						if(keycode == Keys.D) player.moveRight(true);
 						if(keycode == Keys.SPACE) player.requestFire();
@@ -123,8 +121,6 @@ public class PlayScreen implements Screen {
 					}
 					@Override
 					public boolean keyUp(int keycode) {
-						//if(keycode == Keys.A && !Gdx.input.isKeyPressed(Keys.D)) player.setState(Player.MovementState.Idle);
-						//if(keycode == Keys.D && !Gdx.input.isKeyPressed(Keys.A)) player.setState(Player.MovementState.Idle);
 						if(keycode == Keys.A) player.moveLeft(false);
 						if(keycode == Keys.D) player.moveRight(false);
 						return true;
@@ -158,7 +154,7 @@ public class PlayScreen implements Screen {
 				checkCollisions(go, i);
 
 				// Update
-				go.update();
+				go.update(timestep);
 			}
 			timeAccum -= timestep;
 		}

@@ -12,7 +12,7 @@ public class Floor extends GameObject {
 	}
 
 	@Override
-	public void update() {
+	public void update(float delta) {
 		// TODO Auto-generated method stub
 
 	}

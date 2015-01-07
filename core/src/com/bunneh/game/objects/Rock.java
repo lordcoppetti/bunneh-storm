@@ -15,7 +15,7 @@ public class Rock extends Enemy {
 	}
 
 	@Override
-	public void update() {
+	public void update(float delta) {
 		updatePosition();
 	}
 

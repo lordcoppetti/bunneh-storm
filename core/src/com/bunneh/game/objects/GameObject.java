@@ -7,7 +7,7 @@ public abstract class GameObject {
 	
 	protected boolean destroy = false;
 
-	public abstract void update();
+	public abstract void update(float delta);
 	
 	public abstract void render(SpriteBatch batch);
 

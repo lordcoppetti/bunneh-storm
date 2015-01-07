@@ -14,7 +14,7 @@ public abstract class Enemy extends GameObject {
 	}
 
 	@Override
-	public abstract void update();
+	public abstract void update(float delta);
 
 	@Override
 	public abstract void render(SpriteBatch batch);

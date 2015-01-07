@@ -25,7 +25,7 @@ public class Bullet extends GameObject {
 	}
 
 	@Override
-	public void update() {
+	public void update(float delta) {
 		if(needsDestroy()) return;
 		if(checkOffScreenDestroy()) return;;
 		updatePosition();

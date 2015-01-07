@@ -21,7 +21,7 @@ public class Hud {
 	public void render(SpriteBatch batch) {
 		if(player == null) return;
 		font.draw(batch, PLAYER_LIVES + player.getLives(), playerLivesPos.x, playerLivesPos.y);
-		font.draw(batch, PLAYER_ATK_POW + player.getAtkPow(), playerAtkPowPos.x, playerAtkPowPos.y);
+		font.draw(batch, PLAYER_ATK_POW + player.getAtkPow() + "%", playerAtkPowPos.x, playerAtkPowPos.y);
 	}
 
 	public void setPlayer(Player player) {
