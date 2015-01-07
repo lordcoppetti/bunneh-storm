@@ -175,22 +175,6 @@ public class PlayScreen implements Screen {
 	}
 
 
-
-//	private void checkCollisions(GameObject go, int index) {
-//		for(int j = 0 ; j < gameObjects.size ; j++) {
-//			if(j == index) continue;
-//			if(go instanceof Floor) continue;
-//			// Check rectangle overlap
-//			GameObject target = gameObjects.get(j);
-//			Rectangle targetRect = target.getRect();
-//			if(targetRect.overlaps(go.getRect())) {
-//				// Collision
-//				go.collided(target);
-//				target.collided(go);
-//			}
-//		}
-//	}
-
 	@Override
 	public void resize(int width, int height) {
 		// Somehow keep aspect ratio...
