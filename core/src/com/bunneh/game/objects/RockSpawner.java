@@ -1,13 +1,12 @@
-package com.bunneh.game.screens;
+package com.bunneh.game.objects;
 
 import java.util.Random;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.bunneh.game.BunnehStormGame;
-import com.bunneh.game.objects.EnemySpawner;
-import com.bunneh.game.objects.Rock;
 
 public class RockSpawner implements EnemySpawner {
 	
@@ -61,8 +60,9 @@ public class RockSpawner implements EnemySpawner {
 		timer = 0;
 		float x = MathUtils.random(leftBoundary, rightBoundary);
 		float y = BunnehStormGame.V_HEIGHT/2;
+		BunnehStormGame game = (BunnehStormGame) Gdx.app.getApplicationListener();
 		Rock rock = new Rock(new Rectangle(x, y, width, height), new Vector2(0, -fallSpeed));
-		PlayScreen.gameObjects.add(rock);
+		game.goHandler.addObstacle(rock);
 		if(increaseSpawnInterval) {
 			float newSpawnInterval = spawnInterval - spawnIntervalIncrement;
 			if(newSpawnInterval >= spawnIntervalMin) {

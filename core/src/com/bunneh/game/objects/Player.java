@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.bunneh.game.BunnehStormGame;
 import com.bunneh.game.screens.PlayScreen;
 
 public class Player extends GameObject {
@@ -81,9 +82,9 @@ public class Player extends GameObject {
 
 	private void fire() {
 		fireRequested = false;
-		// TODO Fire fucking bullets!
 		Bullet newBullet = new Bullet(attackPower, rect.x + (rect.width/2), rect.y + rect.height);
-		PlayScreen.gameObjects.add(newBullet);
+		BunnehStormGame game = (BunnehStormGame) Gdx.app.getApplicationListener();
+		game.goHandler.addPlayerBullet(newBullet);
 	}
 
 	public void requestFire() {

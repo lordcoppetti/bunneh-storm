@@ -11,11 +11,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.bunneh.game.BunnehStormGame;
 
 public class MainMenuScreen implements Screen {
 	
-	private BunnehStormGame game;
 	private Color backColor = new Color(0f, 0f, 0f, 1f);
 	
 	private SpriteBatch batch;
@@ -26,10 +24,6 @@ public class MainMenuScreen implements Screen {
 	// Vectors and positions
 	private Vector2 center = new Vector2(V_WIDTH, V_HEIGHT);
 	
-	public MainMenuScreen(BunnehStormGame game) {
-		this.game = game;
-	}
-
 	@Override
 	public void show() {
 		font = new BitmapFont();

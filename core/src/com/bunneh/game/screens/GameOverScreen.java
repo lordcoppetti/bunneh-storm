@@ -65,9 +65,7 @@ public class GameOverScreen implements Screen {
 	@Override
 	public void resize(int width, int height) {
 		float aspectRatio = (float) width / (float) height;
-		BunnehStormGame game = (BunnehStormGame) Gdx.app.getApplicationListener();
-		camera = new OrthographicCamera(game.V_WIDTH * aspectRatio, game.V_HEIGHT);
-
+		camera = new OrthographicCamera(BunnehStormGame.V_WIDTH * aspectRatio, BunnehStormGame.V_HEIGHT);
 	}
 
 	@Override

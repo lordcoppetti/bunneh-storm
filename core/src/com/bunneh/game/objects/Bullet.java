@@ -7,7 +7,6 @@ import com.bunneh.game.BunnehStormGame;
 
 public class Bullet extends GameObject {
 	
-	private float x, y;
 	private float bulletWidth = 2f;
 	private float bulletHeight = 4f;
 	private int attackPower = 5;
@@ -18,8 +17,6 @@ public class Bullet extends GameObject {
 	private float bulletSpeed = 4f;
 
 	public Bullet(int attackPower, float x, float y) {
-		this.x = x;
-		this.y = y;
 		this.attackPower = attackPower;
 		rect = new Rectangle(x-bulletWidth/2, y, bulletWidth, bulletHeight);
 	}

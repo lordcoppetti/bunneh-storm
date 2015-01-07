@@ -11,17 +11,15 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
 import com.bunneh.game.BunnehStormGame;
 import com.bunneh.game.InputAdapter;
 import com.bunneh.game.objects.EnemySpawnerContainer;
 import com.bunneh.game.objects.Floor;
-import com.bunneh.game.objects.GameObject;
 import com.bunneh.game.objects.Hud;
 import com.bunneh.game.objects.Player;
+import com.bunneh.game.objects.RockSpawner;
 
 /*
  * This PlayScreen doesn't use box2d or any physics engine.
@@ -30,12 +28,14 @@ import com.bunneh.game.objects.Player;
  */
 
 /*
+ * DONE: GameObectsHandler, CollisionHandler
+ * TODO: EnemySpawner (real enemies that fire towards the player)
+ * TODO: TextObject: GameObject with a bitmap that has flexibility to move, fade, change color, etc (tween)
  * TODO: Refactor RockSpawner into something easier and more flexible to maintain
+ * Spent total hours: 6
  */
 public class PlayScreen implements Screen {
 	
-	public static Array<GameObject> gameObjects;
-
 	private static boolean gameOver = false;
 
 	private final float timestep = 1 / 60f;
@@ -43,16 +43,19 @@ public class PlayScreen implements Screen {
 
 	private BunnehStormGame game;
 	private Color backColor = new Color(0f, 0f, 0f, 1f);
-	
 	private Texture background;
-	
 	private OrthographicCamera camera;
 	private SpriteBatch batch;
-	private ShapeRenderer debugRender;
 	private BitmapFont font;
-	private Player player;
 	private EnemySpawnerContainer esc;
 	private Hud hud;
+
+	private ShapeRenderer debugRender;
+
+	// custom game objects for this screen
+	private Player player;
+	private Floor floor;
+
 	
 	public PlayScreen(BunnehStormGame game) {
 		gameOver = false;
@@ -61,24 +64,28 @@ public class PlayScreen implements Screen {
 
 	@Override
 	public void show() {
-		gameObjects = new Array<GameObject>();
-		camera = new OrthographicCamera(game.V_WIDTH, game.V_HEIGHT);
+		// initialize common game objects
+		game.goHandler.initialize();
+
+		// initialize screen stuff
+		camera = new OrthographicCamera(BunnehStormGame.V_WIDTH, BunnehStormGame.V_HEIGHT);
 		batch = new SpriteBatch();
 		font = new BitmapFont();
 		font.setScale(0.8f);
 		hud = new Hud(font);
-		hud.setPlayerLivesPos(new Vector2(-game.V_WIDTH/2.2f, -game.V_HEIGHT/2.2f));
-		hud.setPlayerAtkPowPos(new Vector2(game.V_WIDTH/3.5f, hud.getPlayerLivesPos().y));
+		hud.setPlayerLivesPos(new Vector2(-BunnehStormGame.V_WIDTH/2.2f, -BunnehStormGame.V_HEIGHT/2.2f));
+		hud.setPlayerAtkPowPos(new Vector2(BunnehStormGame.V_WIDTH/3.5f, hud.getPlayerLivesPos().y));
 		
+		// for debug rendering
 		if(game.debugRender) debugRender = new ShapeRenderer();
 		
-		// Create the floor
-		float floorHeight = game.V_HEIGHT / 4f; // 1/4 of the screen
-		Floor floor = new Floor(new Rectangle(
-				-game.V_WIDTH/2, -game.V_HEIGHT/2,
-				game.V_WIDTH, floorHeight));
+		// create the floor (custom game object)
+		float floorHeight = BunnehStormGame.V_HEIGHT / 4f; // 1/4 of the screen
+		 floor = new Floor(new Rectangle(
+			-BunnehStormGame.V_WIDTH/2, -BunnehStormGame.V_HEIGHT/2,
+			BunnehStormGame.V_WIDTH, floorHeight));
 		
-		// Create the player
+		// create the player (custom game object)
 		float playerWidth = 10f;
 		float playerHeight = 15f;
 		float playerYoffset = 3f;
@@ -86,10 +93,10 @@ public class PlayScreen implements Screen {
 				-playerWidth/2f, -floorHeight-playerYoffset, 
 				playerWidth, playerHeight);
 		player = new Player(playerRect);
-		player.setXboundaries(-game.V_WIDTH/2, (game.V_WIDTH/2)-playerRect.width);
+		player.setXboundaries(-BunnehStormGame.V_WIDTH/2, (BunnehStormGame.V_WIDTH/2)-playerRect.width);
 		hud.setPlayer(player);
 		
-		// Create the spawn points for enemies/obstacles
+		// create the spawn points for enemies/obstacles
 		 esc = new EnemySpawnerContainer();
 		RockSpawner rs = new RockSpawner(-BunnehStormGame.V_WIDTH/2, (BunnehStormGame.V_WIDTH/2)-5f, 4f);
 		rs.setFallSpeed(0.6f);
@@ -102,11 +109,8 @@ public class PlayScreen implements Screen {
 		rs.setFallSpeedMax(5f);
 		esc.addEnemySpawner(rs);
 
-		// Create input multiplexer
+		// create input multiplexer
 		createInput();
-
-		gameObjects.add(floor);
-		gameObjects.add(player);
 	}
 
 	private void createInput() {
@@ -142,20 +146,10 @@ public class PlayScreen implements Screen {
 		esc.update(delta);
 		timeAccum += delta;
 		while(timeAccum >= timestep) {
-			for(int i = 0 ; i < gameObjects.size ; i++) {
-				GameObject go = gameObjects.get(i);
-				if(go.needsDestroy()) {
-					gameObjects.removeIndex(i);
-					go.dispose();
-					continue;
-				}
-
-				// TODO Check collisions
-				checkCollisions(go, i);
-
-				// Update
-				go.update(timestep);
-			}
+			// check collisions as desired
+			game.collisionHandler.checkCollision(player, game.goHandler.getObstacles());
+			game.collisionHandler.checkCollision(game.goHandler.getObstacles(), game.goHandler.getPlayerBullets(), floor);
+			game.goHandler.update(timestep, player, floor);
 			timeAccum -= timestep;
 		}
 		
@@ -163,53 +157,45 @@ public class PlayScreen implements Screen {
 		
 		// render objects
 		if(game.debugRender) {
-			debugRender.setProjectionMatrix(camera.combined);
-			debugRender.begin(ShapeType.Line);
-			debugRender.setColor(Color.GREEN);
-			for(GameObject go : gameObjects) {
-				Rectangle rect = go.getRect();
-				debugRender.rect(rect.x, rect.y, rect.width, rect.height);
-			}
-			debugRender.end();
+			game.goHandler.debugRender(debugRender, camera, player, floor);
 			batch.setProjectionMatrix(camera.combined);
 			batch.begin();
-			font.draw(batch, "Screen objects: " + gameObjects.size, -game.V_WIDTH/2, game.V_HEIGHT/2);
+			int totalObjects = game.goHandler.getObjectsSize();
+			totalObjects += player != null ? 1 : 0;
+			totalObjects += floor != null ? 1 : 0;
+			font.draw(batch, "Screen objects: " + totalObjects, 
+					-BunnehStormGame.V_WIDTH/2, BunnehStormGame.V_HEIGHT/2);
 			hud.render(batch);
 			batch.end();
 			
 		} else {
-			batch.setProjectionMatrix(camera.combined);
-			batch.begin();
-			for(GameObject go : gameObjects) {
-				go.render(batch);
-			}
-			batch.end();
+			game.goHandler.render(batch, camera);
 		}
 		
 	}
 
 
 
-	private void checkCollisions(GameObject go, int index) {
-		for(int j = 0 ; j < gameObjects.size ; j++) {
-			if(j == index) continue;
-			if(go instanceof Floor) continue;
-			// Check rectangle overlap
-			GameObject target = gameObjects.get(j);
-			Rectangle targetRect = target.getRect();
-			if(targetRect.overlaps(go.getRect())) {
-				// Collision
-				go.collided(target);
-				target.collided(go);
-			}
-		}
-	}
+//	private void checkCollisions(GameObject go, int index) {
+//		for(int j = 0 ; j < gameObjects.size ; j++) {
+//			if(j == index) continue;
+//			if(go instanceof Floor) continue;
+//			// Check rectangle overlap
+//			GameObject target = gameObjects.get(j);
+//			Rectangle targetRect = target.getRect();
+//			if(targetRect.overlaps(go.getRect())) {
+//				// Collision
+//				go.collided(target);
+//				target.collided(go);
+//			}
+//		}
+//	}
 
 	@Override
 	public void resize(int width, int height) {
 		// Somehow keep aspect ratio...
 		float aspectRatio = (float) width / (float) height;
-		camera = new OrthographicCamera(game.V_WIDTH * aspectRatio, game.V_HEIGHT);
+		camera = new OrthographicCamera(BunnehStormGame.V_WIDTH * aspectRatio, BunnehStormGame.V_HEIGHT);
 	}
 
 	@Override
@@ -235,19 +221,15 @@ public class PlayScreen implements Screen {
 
 	@Override
 	public void dispose() {
-		if(gameObjects.size > 0) {
-			for(GameObject go : gameObjects) {
-				go.dispose();
-			}
-		}
+		game.goHandler.disposeAll();
+		player.dispose();
+		floor.dispose();
 		if(background != null) background.dispose();
 		if(debugRender != null) debugRender.dispose();
 		if(font != null) font.dispose();
-		gameObjects.clear();
 		batch.dispose();
 		Gdx.input.setInputProcessor(null);
 	}
-
 	
 	public static void setGameOver(boolean over) {
 		gameOver = over;
