@@ -1,4 +1,4 @@
-package com.bunneh.game.objects;
+package com.bunneh.game.spawners;
 
 import java.util.Random;
 
@@ -7,8 +7,9 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.bunneh.game.BunnehStormGame;
+import com.bunneh.game.objects.Rock;
 
-public class RockSpawner implements EnemySpawner {
+public class RockSpawner implements ObjectSpawner {
 	
 	private float leftBoundary;
 	private float rightBoundary;
@@ -110,6 +111,12 @@ public class RockSpawner implements EnemySpawner {
 
 	public void setFallSpeedMax(float fallSpeedMax) {
 		this.fallSpeedMax = fallSpeedMax;
+	}
+
+	@Override
+	public void restart() {
+		// TODO Auto-generated method stub
+		
 	}
 
 

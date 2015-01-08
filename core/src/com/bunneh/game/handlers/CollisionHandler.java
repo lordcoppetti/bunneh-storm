@@ -1,6 +1,7 @@
 package com.bunneh.game.handlers;
 
 import com.badlogic.gdx.utils.Array;
+import com.bunneh.game.objects.Floor;
 import com.bunneh.game.objects.GameObject;
 import com.bunneh.game.objects.Player;
 
@@ -40,6 +41,41 @@ public final class CollisionHandler {
 				go2.collided(go);
 			}
 		}
+	}
+
+	public void checkCollision(Array<GameObject> groupA, Player player, Floor floor) {
+		for(GameObject go : groupA) {
+			if(go.getRect().overlaps(player.getRect())) {
+				player.collided(go);
+				continue;
+			}
+			if(go.getRect().overlaps(floor.getRect())) {
+				go.collided(floor);
+				continue;
+			}
+		}
+	}
+
+	public void checkCollision(Array<GameObject> enemies,
+			Array<GameObject> playerBullets, Player player, Floor floor) {
+		for(GameObject e : enemies) {
+			if(e.getRect().overlaps(player.getRect())) {
+				player.collided(e);
+				continue;
+			}
+			if(e.getRect().overlaps(floor.getRect())) {
+				e.collided(floor);
+				continue;
+			}
+			for(GameObject pb : playerBullets) {
+				if(e.getRect().overlaps(pb.getRect())) {
+					e.collided(pb);
+					pb.collided(e);
+					continue;
+				}
+			}
+		}
+		
 	}
 
 }

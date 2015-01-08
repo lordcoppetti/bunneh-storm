@@ -44,7 +44,9 @@ public class Rock extends Enemy {
 	@Override
 	public boolean collided(GameObject target) {
 		if(target instanceof Bullet) {
-			health -= ((Bullet) target).getAttackPower();
+			Bullet b = (Bullet) target;
+			if(!b.isAllyBullet()) return false;
+			health -= b.getAttackPower();
 			if(health <= 0) {
 				destroy = true;
 			}

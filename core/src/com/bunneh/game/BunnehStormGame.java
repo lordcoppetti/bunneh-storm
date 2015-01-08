@@ -8,6 +8,13 @@ import com.bunneh.game.screens.GameOverScreen;
 import com.bunneh.game.screens.MainMenuScreen;
 import com.bunneh.game.screens.PlayScreen;
 
+/*
+ * DONE: GameObjectsHandler, CollisionHandler
+ * TODO: EnemySpawner (real enemies that fire towards the player)
+ * TODO: TextObject: GameObject with a bitmap font that has flexibility to move, fade, change color, etc (tween)
+ * TODO: Refactor RockSpawner into something easier and more flexible to maintain
+ * Spent total hours: 6
+ */
 public class BunnehStormGame extends Game {
 	
 	public static final String TITLE = "Bunneh Storm", VERSION = "0.0.1-alpha";

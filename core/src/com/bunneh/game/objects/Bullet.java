@@ -4,21 +4,26 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.bunneh.game.BunnehStormGame;
+import com.bunneh.game.utils.MathChiches;
 
 public class Bullet extends GameObject {
 	
 	private float bulletWidth = 2f;
 	private float bulletHeight = 4f;
 	private int attackPower = 5;
+	private float angle;
+	private boolean isAllyBullet = true;
 	
 	private Rectangle rect;
 	
 	private Vector2 velocity = new Vector2(0, 0);
-	private float bulletSpeed = 4f;
-
-	public Bullet(int attackPower, float x, float y) {
+	private float bulletSpeed;
+	
+	public Bullet(int attackPower, float x, float y, float angle, float bulletSpeed) {
 		this.attackPower = attackPower;
 		rect = new Rectangle(x-bulletWidth/2, y, bulletWidth, bulletHeight);
+		this.angle = angle;
+		this.velocity = MathChiches.getAngleBasedMovement(angle, bulletSpeed);
 	}
 
 	@Override
@@ -29,12 +34,21 @@ public class Bullet extends GameObject {
 	}
 
 	private void updatePosition() {
-		velocity.y = bulletSpeed;
+		rect.x += velocity.x;
 		rect.y += velocity.y;
 	}
 
 	private boolean checkOffScreenDestroy() {
 		if(rect.y > BunnehStormGame.V_HEIGHT/2) {
+			destroy = true;
+			return true;
+		} else if(rect.y < -BunnehStormGame.V_HEIGHT/2) {
+			destroy = true;
+			return true;
+		} else if(rect.x > BunnehStormGame.V_HEIGHT/2) {
+			destroy = true;
+			return true;
+		} else if(rect.x < -BunnehStormGame.V_HEIGHT/2) {
 			destroy = true;
 			return true;
 		}
@@ -68,6 +82,10 @@ public class Bullet extends GameObject {
 			destroy = true;
 			return true;
 		}
+		if(target instanceof Floor) {
+			destroy = true;
+			return true;
+		}
 		return false;
 	}
 
@@ -77,6 +95,14 @@ public class Bullet extends GameObject {
 
 	public void setAttackPower(int attackPower) {
 		this.attackPower = attackPower;
+	}
+
+	public boolean isAllyBullet() {
+		return isAllyBullet;
+	}
+
+	public void setAllyBullet(boolean isAllyBullet) {
+		this.isAllyBullet = isAllyBullet;
 	}
 
 }

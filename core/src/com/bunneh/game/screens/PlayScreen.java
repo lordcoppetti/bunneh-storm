@@ -15,25 +15,20 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.bunneh.game.BunnehStormGame;
 import com.bunneh.game.InputAdapter;
-import com.bunneh.game.objects.EnemySpawnerContainer;
 import com.bunneh.game.objects.Floor;
 import com.bunneh.game.objects.Hud;
 import com.bunneh.game.objects.Player;
-import com.bunneh.game.objects.RockSpawner;
+import com.bunneh.game.objects.SniperEnemy;
+import com.bunneh.game.spawners.ObjectSpawnerContainer;
+import com.bunneh.game.spawners.RockSpawner;
+import com.bunneh.game.spawners.SniperEnemySpawner;
 
 /*
  * This PlayScreen doesn't use box2d or any physics engine.
  * It doesn't even use a Stage to manage game objects.
- * Also does collisions by rectangle overlap.
+ * Also checks collisions by rectangle overlap by using the CollisionHandler.
  */
 
-/*
- * DONE: GameObectsHandler, CollisionHandler
- * TODO: EnemySpawner (real enemies that fire towards the player)
- * TODO: TextObject: GameObject with a bitmap that has flexibility to move, fade, change color, etc (tween)
- * TODO: Refactor RockSpawner into something easier and more flexible to maintain
- * Spent total hours: 6
- */
 public class PlayScreen implements Screen {
 	
 	private static boolean gameOver = false;
@@ -47,7 +42,7 @@ public class PlayScreen implements Screen {
 	private OrthographicCamera camera;
 	private SpriteBatch batch;
 	private BitmapFont font;
-	private EnemySpawnerContainer esc;
+	private ObjectSpawnerContainer esc;
 	private Hud hud;
 
 	private ShapeRenderer debugRender;
@@ -97,7 +92,7 @@ public class PlayScreen implements Screen {
 		hud.setPlayer(player);
 		
 		// create the spawn points for enemies/obstacles
-		 esc = new EnemySpawnerContainer();
+		esc = new ObjectSpawnerContainer();
 		RockSpawner rs = new RockSpawner(-BunnehStormGame.V_WIDTH/2, (BunnehStormGame.V_WIDTH/2)-5f, 4f);
 		rs.setFallSpeed(0.6f);
 		rs.setSize(10f, 10f);
@@ -107,7 +102,12 @@ public class PlayScreen implements Screen {
 		rs.setIncrementFallSpeed(true);
 		rs.setFallSpeedIncrement(0.08f);
 		rs.setFallSpeedMax(5f);
-		esc.addEnemySpawner(rs);
+		esc.addObjectSpawner(rs);
+
+		SniperEnemySpawner ses = new SniperEnemySpawner(-BunnehStormGame.V_WIDTH/2, (BunnehStormGame.V_WIDTH/2)-6f);
+		ses.setSpawnIntervalRange(5f, 10f);
+		ses.setTarget(player);
+		esc.addObjectSpawner(ses);
 
 		// create input multiplexer
 		createInput();
@@ -149,6 +149,8 @@ public class PlayScreen implements Screen {
 			// check collisions as desired
 			game.collisionHandler.checkCollision(player, game.goHandler.getObstacles());
 			game.collisionHandler.checkCollision(game.goHandler.getObstacles(), game.goHandler.getPlayerBullets(), floor);
+			game.collisionHandler.checkCollision(game.goHandler.getEnemyBullets(), player, floor);
+			game.collisionHandler.checkCollision(game.goHandler.getEnemies(), game.goHandler.getPlayerBullets(), player, floor);
 			game.goHandler.update(timestep, player, floor);
 			timeAccum -= timestep;
 		}

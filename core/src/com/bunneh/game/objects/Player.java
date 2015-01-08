@@ -21,6 +21,7 @@ public class Player extends GameObject {
 	
 	private int lives = 3;
 	private int attackPower = 5;
+	private float bulletSpeed = 4f;
 	
 	// Control stuff for firing
 	private boolean fireRequested = false;
@@ -82,7 +83,7 @@ public class Player extends GameObject {
 
 	private void fire() {
 		fireRequested = false;
-		Bullet newBullet = new Bullet(attackPower, rect.x + (rect.width/2), rect.y + rect.height);
+		Bullet newBullet = new Bullet(attackPower, rect.x + (rect.width/2), rect.y + rect.height, 90f, bulletSpeed);
 		BunnehStormGame game = (BunnehStormGame) Gdx.app.getApplicationListener();
 		game.goHandler.addPlayerBullet(newBullet);
 	}
@@ -138,7 +139,20 @@ public class Player extends GameObject {
 	@Override
 	public boolean collided(GameObject target) {
 		if(invulnerable) return false;
-		if(target instanceof Rock) {
+		if(target instanceof Enemy) {
+			lives -= 1;
+			invulnerable = true;
+			target.destroy = true;
+			if(lives < 0) {
+				// cap it
+				lives = 0;
+				PlayScreen.setGameOver(true);
+			}
+			return true;
+		}
+		if(target instanceof Bullet) {
+			Bullet b = (Bullet) target;
+			if(b.isAllyBullet()) return false;
 			lives -= 1;
 			invulnerable = true;
 			target.destroy = true;
