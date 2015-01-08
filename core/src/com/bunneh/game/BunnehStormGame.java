@@ -10,10 +10,10 @@ import com.bunneh.game.screens.PlayScreen;
 
 /*
  * DONE: GameObjectsHandler, CollisionHandler
- * TODO: EnemySpawner (real enemies that fire towards the player)
+ * DONE: EnemySpawner (real enemies that fire towards the player)
  * TODO: TextObject: GameObject with a bitmap font that has flexibility to move, fade, change color, etc (tween)
- * TODO: Refactor RockSpawner into something easier and more flexible to maintain
- * Spent total hours: 6
+ * TODO: Refactor Spawners in general do something easier and more flexible to maintain, also with better options
+ * Spent total hours: 7:45
  */
 public class BunnehStormGame extends Game {
 	

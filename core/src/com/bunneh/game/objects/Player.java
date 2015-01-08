@@ -2,10 +2,12 @@ package com.bunneh.game.objects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.bunneh.game.BunnehStormGame;
 import com.bunneh.game.screens.PlayScreen;
+import com.bunneh.game.utils.MathChiches;
 
 public class Player extends GameObject {
 	
@@ -17,7 +19,8 @@ public class Player extends GameObject {
 	private float leftBoundary;
 
 	private Vector2 velocity = new Vector2(0, 0);
-	private float movSpeed = 2f;
+	private float movSpeed = 3f;
+	private float lerpAlpha = 40f;
 	
 	private int lives = 3;
 	private int attackPower = 5;
@@ -50,28 +53,31 @@ public class Player extends GameObject {
 				invulnerableTimer = 0f;
 			}
 		}
-		updatePosition();
+		updatePosition(delta);
 		updateFireRequest(delta);
 	}
 
 
-	private void updatePosition() {
-		velocity.x = 0;
-		if(movingLeft) velocity.x = -movSpeed;
-		if(movingRight) velocity.x = movSpeed;
+	private void updatePosition(float delta) {
+		Vector2 velGoal = new Vector2(0, 0);
+		if(movingLeft) velGoal.x = -movSpeed;
+		if(movingRight) velGoal.x = movSpeed;
+		
+		velocity.x = MathChiches.approach(velGoal.x, velocity.x, delta*lerpAlpha);
+		velocity.y = MathChiches.approach(velGoal.y, velocity.y, delta*lerpAlpha);
 
-		float newX = rect.x += velocity.x;
+		rect.x += velocity.x;
 
-		if(newX <= leftBoundary) {
-			newX = leftBoundary;
+		if(rect.x <= leftBoundary) {
+			rect.x = leftBoundary;
+			velocity.x = 0;
 		}
-		if(newX >= rightBoundary) {
-			newX = rightBoundary;
+		if(rect.x >= rightBoundary) {
+			rect.x = rightBoundary;
+			velocity.x = 0;
 		}
-
-		rect.x = newX;
 	}
-
+	
 	private void updateFireRequest(float delta) {
 		fireCounter += delta;
 		if(!fireRequested) return;

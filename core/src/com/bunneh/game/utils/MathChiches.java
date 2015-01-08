@@ -22,4 +22,16 @@ public class MathChiches {
         return angle;
     }
 
+	public static float approach(float goal, float current, float delta) {
+		float diff = goal - current;
+		if(diff > delta) {
+			return current + delta;
+		}
+		if(diff < -delta) {
+			return current - delta;
+		}
+		
+		return goal;
+	}
+
 }
