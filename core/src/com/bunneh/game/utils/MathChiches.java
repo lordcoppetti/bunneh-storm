@@ -33,5 +33,18 @@ public class MathChiches {
 		
 		return goal;
 	}
+	
+	public static Vector2 vectorToTarget(float x, float y, float targetX, float targetY) {
+		Vector2 v = new Vector2();
+		v.x = (targetX-x);
+		v.y = (targetY-y);
+		return v;
+	}
+	
+	public static float distance(float x1, float y1, float x2, float y2) {
+		double distance = Math.sqrt((x2 - x1) *(x2-x1) + (y2 - y1) * (y2-y1));
+		return (float) distance;
+	}
+	
 
 }

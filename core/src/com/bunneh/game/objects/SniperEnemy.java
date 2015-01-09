@@ -98,5 +98,9 @@ public class SniperEnemy extends Enemy {
 		}
 		return false;
 	}
+	
+	public void setBulletInterval(float interval) {
+		this.bulletInterval = interval;
+	}
 
 }

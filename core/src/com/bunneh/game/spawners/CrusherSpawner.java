@@ -5,11 +5,11 @@ import java.util.Random;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.bunneh.game.BunnehStormGame;
-import com.bunneh.game.objects.Rock;
+import com.bunneh.game.objects.Crusher;
+import com.bunneh.game.objects.GameObject;
 
-public class RockSpawner implements ObjectSpawner {
+public class CrusherSpawner implements ObjectSpawner {
 	
 	private float leftBoundary;
 	private float rightBoundary;
@@ -19,8 +19,13 @@ public class RockSpawner implements ObjectSpawner {
 	private float fallSpeed = 1f;
 	private float width = 10f;
 	private float height = 10f;
+	
 
 	// Modifier values
+	private GameObject target = null;
+	private boolean followTarget = false;
+	private float targetDistance = 0f;
+
 	private boolean increaseSpawnInterval = false;
 	private float spawnIntervalIncrement = 0f;
 	private float spawnIntervalMin = 0.1f;
@@ -31,7 +36,7 @@ public class RockSpawner implements ObjectSpawner {
 
 	Random rand;
 
-	public RockSpawner(float leftBoundary, float rightBoundary, float spawnInterval) {
+	public CrusherSpawner(float leftBoundary, float rightBoundary, float spawnInterval) {
 		this.leftBoundary = leftBoundary;
 		this.rightBoundary = rightBoundary;
 		this.spawnInterval = spawnInterval;
@@ -53,17 +58,23 @@ public class RockSpawner implements ObjectSpawner {
 	public void update(float delta) {
 		timer += delta;
 		if(timer >= spawnInterval) {
-			spawnRock();
+			spawnCrusher();
 		}
 	}
 
-	private void spawnRock() {
+	private void spawnCrusher() {
 		timer = 0;
 		float x = MathUtils.random(leftBoundary, rightBoundary);
 		float y = BunnehStormGame.V_HEIGHT/2;
 		BunnehStormGame game = (BunnehStormGame) Gdx.app.getApplicationListener();
-		Rock rock = new Rock(new Rectangle(x, y, width, height), new Vector2(0, -fallSpeed));
-		game.goHandler.addObstacle(rock);
+		Crusher c = new Crusher(new Rectangle(x, y, width, height), fallSpeed);
+		if(target != null) {
+			c.setTarget(target);
+			c.setFollowTarget(followTarget);
+			if(targetDistance > 0) c.setFollowTargetLimit(targetDistance);
+				
+		}
+		game.goHandler.addObstacle(c);
 		if(increaseSpawnInterval) {
 			float newSpawnInterval = spawnInterval - spawnIntervalIncrement;
 			if(newSpawnInterval >= spawnIntervalMin) {
@@ -117,6 +128,18 @@ public class RockSpawner implements ObjectSpawner {
 	public void restart() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public void setTarget(GameObject target) {
+		this.target = target;
+	}
+
+	public void setFollowTarget(boolean followTarget) {
+		this.followTarget = followTarget;
+	}
+
+	public void setFollowTargetLimit(float distance) {
+		this.targetDistance = distance;
 	}
 
 

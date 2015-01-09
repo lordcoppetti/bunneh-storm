@@ -18,9 +18,8 @@ import com.bunneh.game.InputAdapter;
 import com.bunneh.game.objects.Floor;
 import com.bunneh.game.objects.Hud;
 import com.bunneh.game.objects.Player;
-import com.bunneh.game.objects.SniperEnemy;
+import com.bunneh.game.spawners.CrusherSpawner;
 import com.bunneh.game.spawners.ObjectSpawnerContainer;
-import com.bunneh.game.spawners.RockSpawner;
 import com.bunneh.game.spawners.SniperEnemySpawner;
 
 /*
@@ -93,20 +92,25 @@ public class PlayScreen implements Screen {
 		
 		// create the spawn points for enemies/obstacles
 		esc = new ObjectSpawnerContainer();
-		RockSpawner rs = new RockSpawner(-BunnehStormGame.V_WIDTH/2, (BunnehStormGame.V_WIDTH/2)-5f, 4f);
-		rs.setFallSpeed(0.6f);
-		rs.setSize(10f, 10f);
-		rs.setIncreaseSpawnInterval(true);
-		rs.setSpawnIntervalIncrement(0.08f);
-		rs.setSpawnIntervalMin(0.5f);
-		rs.setIncrementFallSpeed(true);
-		rs.setFallSpeedIncrement(0.08f);
-		rs.setFallSpeedMax(5f);
-		esc.addObjectSpawner(rs);
+
+		CrusherSpawner cs = new CrusherSpawner(-BunnehStormGame.V_WIDTH/2, (BunnehStormGame.V_WIDTH/2)-5f, 4f);
+		cs.setFallSpeed(0.7f);
+		cs.setTarget(player);
+		cs.setFollowTarget(true);
+		cs.setFollowTargetLimit(BunnehStormGame.V_WIDTH/3f);
+		cs.setSize(20f, 20f);
+		cs.setIncreaseSpawnInterval(true);
+		cs.setSpawnIntervalIncrement(0.08f);
+		cs.setSpawnIntervalMin(0.5f);
+		cs.setIncrementFallSpeed(true);
+		cs.setFallSpeedIncrement(0.08f);
+		cs.setFallSpeedMax(5f);
+		esc.addObjectSpawner(cs);
 
 		SniperEnemySpawner ses = new SniperEnemySpawner(-BunnehStormGame.V_WIDTH/2, (BunnehStormGame.V_WIDTH/2)-6f);
 		ses.setSpawnIntervalRange(5f, 10f);
 		ses.setTarget(player);
+		ses.setBulletInterval(0.8f);
 		esc.addObjectSpawner(ses);
 
 		// create input multiplexer
