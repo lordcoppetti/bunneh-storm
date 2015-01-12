@@ -45,12 +45,7 @@ public class PlayScreen implements Screen {
 	private ShapeRenderer debugRender;
 
 	// custom game objects for this screen
-	private Player player;
 	private Floor floor;
-	
-	// the level handler
-	private LevelHandler levelHandler;
-
 	
 	public PlayScreen(BunnehStormGame game) {
 		gameOver = false;
@@ -61,8 +56,6 @@ public class PlayScreen implements Screen {
 	public void show() {
 		// initialize common game objects
 		game.goHandler.initialize();
-		levelHandler = game.levelHandler;
-		levelHandler = new LevelHandler();
 
 		// initialize screen stuff
 		camera = new OrthographicCamera(BunnehStormGame.V_WIDTH, BunnehStormGame.V_HEIGHT);
@@ -89,12 +82,15 @@ public class PlayScreen implements Screen {
 		Rectangle playerRect = new Rectangle(
 				-playerWidth/2f, -floorHeight-playerYoffset, 
 				playerWidth, playerHeight);
-		player = new Player(playerRect);
+		Player player = new Player(playerRect);
 		player.setXboundaries(-BunnehStormGame.V_WIDTH/2, (BunnehStormGame.V_WIDTH/2)-playerRect.width);
 		hud.setPlayer(player);
+
+		// init level handler
+		game.levelHandler = new LevelHandler(player);
 		
 		// create the first levels
-		levelHandler.createLevels();
+		game.levelHandler.createLevels();
 		
 
 		// create input multiplexer
@@ -106,15 +102,15 @@ public class PlayScreen implements Screen {
 				new InputAdapter() {
 					@Override
 					public boolean keyDown(int keycode) {
-						if(keycode == Keys.A) player.moveLeft(true);
-						if(keycode == Keys.D) player.moveRight(true);
-						if(keycode == Keys.SPACE) player.requestFire();
+						if(keycode == Keys.A) game.levelHandler.getPlayer().moveLeft(true);
+						if(keycode == Keys.D) game.levelHandler.getPlayer().moveRight(true);
+						if(keycode == Keys.SPACE) game.levelHandler.getPlayer().requestFire();
 						return true;
 					}
 					@Override
 					public boolean keyUp(int keycode) {
-						if(keycode == Keys.A) player.moveLeft(false);
-						if(keycode == Keys.D) player.moveRight(false);
+						if(keycode == Keys.A) game.levelHandler.getPlayer().moveLeft(false);
+						if(keycode == Keys.D) game.levelHandler.getPlayer().moveRight(false);
 						return true;
 					}
 				}
@@ -135,13 +131,13 @@ public class PlayScreen implements Screen {
 		timeAccum += delta;
 		while(timeAccum >= timestep) {
 			// update level handler
-			levelHandler.update(timestep);
+			game.levelHandler.update(timestep);
 			// check collisions as desired
-			game.collisionHandler.checkCollision(player, game.goHandler.getObstacles());
+			game.collisionHandler.checkCollision(game.levelHandler.getPlayer(), game.goHandler.getObstacles());
 			game.collisionHandler.checkCollision(game.goHandler.getObstacles(), game.goHandler.getPlayerBullets(), floor);
-			game.collisionHandler.checkCollision(game.goHandler.getEnemyBullets(), player, floor);
-			game.collisionHandler.checkCollision(game.goHandler.getEnemies(), game.goHandler.getPlayerBullets(), player, floor);
-			game.goHandler.update(timestep, player, floor);
+			game.collisionHandler.checkCollision(game.goHandler.getEnemyBullets(), game.levelHandler.getPlayer(), floor);
+			game.collisionHandler.checkCollision(game.goHandler.getEnemies(), game.goHandler.getPlayerBullets(), game.levelHandler.getPlayer(), floor);
+			game.goHandler.update(timestep, game.levelHandler.getPlayer(), floor);
 			timeAccum -= timestep;
 		}
 		
@@ -149,13 +145,13 @@ public class PlayScreen implements Screen {
 		
 		// render objects
 		if(game.debugRender) {
-			game.goHandler.debugRender(debugRender, camera, player, floor);
+			game.goHandler.debugRender(debugRender, camera, game.levelHandler.getPlayer(), floor);
 			batch.setProjectionMatrix(camera.combined);
 			batch.begin();
 			//int totalObjects = game.goHandler.getObjectsSize();
 			//totalObjects += player != null ? 1 : 0;
 			//totalObjects += floor != null ? 1 : 0;
-			int currentLevel = levelHandler.getCurrentLevel().getLvlNumber();
+			int currentLevel = game.levelHandler.getCurrentLevel().getLvlNumber();
 			font.draw(batch, "Level  -  " + currentLevel, 
 					-BunnehStormGame.V_WIDTH/2, BunnehStormGame.V_HEIGHT/2);
 			hud.render(batch);
@@ -199,9 +195,8 @@ public class PlayScreen implements Screen {
 	@Override
 	public void dispose() {
 		game.goHandler.disposeAll();
-		player.dispose();
 		floor.dispose();
-		levelHandler.dispose();
+		game.levelHandler.dispose();
 		if(background != null) background.dispose();
 		if(debugRender != null) debugRender.dispose();
 		if(font != null) font.dispose();

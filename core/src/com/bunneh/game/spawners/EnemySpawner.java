@@ -15,8 +15,8 @@ public class EnemySpawner {
 		Shooter,
 	}
 
-	private static float defaultLeftBoundary = (-BunnehStormGame.V_WIDTH/2)+4f;
-	private static float defaultRightBoundary = (BunnehStormGame.V_WIDTH/2)-4f;
+	private static float defaultLeftBoundary = (-BunnehStormGame.V_WIDTH/2);
+	private static float defaultRightBoundary = (BunnehStormGame.V_WIDTH/3);
 	private static float defaultTopBoundary = BunnehStormGame.V_HEIGHT/2;
 	private static float defaultEnemySpeed = 2f;
 
@@ -73,7 +73,7 @@ public class EnemySpawner {
 	}
 
 	private void spawnEnemy() {
-		float x = MathUtils.random(leftBoundary, rightBoundary);
+		float x = MathUtils.random(leftBoundary+enemySize.x, rightBoundary-enemySize.x);
 		float y = defaultTopBoundary;
 		if(bottomBoundary != 0 && topBoundary != 0) y = MathUtils.random(bottomBoundary, topBoundary);
 		y = y + enemySize.y;
