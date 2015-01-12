@@ -15,12 +15,10 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.bunneh.game.BunnehStormGame;
 import com.bunneh.game.InputAdapter;
+import com.bunneh.game.handlers.LevelHandler;
 import com.bunneh.game.objects.Floor;
 import com.bunneh.game.objects.Hud;
 import com.bunneh.game.objects.Player;
-import com.bunneh.game.spawners.CrusherSpawner;
-import com.bunneh.game.spawners.ObjectSpawnerContainer;
-import com.bunneh.game.spawners.SniperEnemySpawner;
 
 /*
  * This PlayScreen doesn't use box2d or any physics engine.
@@ -41,7 +39,7 @@ public class PlayScreen implements Screen {
 	private OrthographicCamera camera;
 	private SpriteBatch batch;
 	private BitmapFont font;
-	private ObjectSpawnerContainer esc;
+	//private ObjectSpawnerContainer esc;
 	private Hud hud;
 
 	private ShapeRenderer debugRender;
@@ -49,6 +47,9 @@ public class PlayScreen implements Screen {
 	// custom game objects for this screen
 	private Player player;
 	private Floor floor;
+	
+	// the level handler
+	private LevelHandler levelHandler;
 
 	
 	public PlayScreen(BunnehStormGame game) {
@@ -60,6 +61,8 @@ public class PlayScreen implements Screen {
 	public void show() {
 		// initialize common game objects
 		game.goHandler.initialize();
+		levelHandler = game.levelHandler;
+		levelHandler = new LevelHandler();
 
 		// initialize screen stuff
 		camera = new OrthographicCamera(BunnehStormGame.V_WIDTH, BunnehStormGame.V_HEIGHT);
@@ -80,8 +83,8 @@ public class PlayScreen implements Screen {
 			BunnehStormGame.V_WIDTH, floorHeight));
 		
 		// create the player (custom game object)
-		float playerWidth = 10f;
-		float playerHeight = 15f;
+		float playerWidth = 20f;
+		float playerHeight = 25f;
 		float playerYoffset = 3f;
 		Rectangle playerRect = new Rectangle(
 				-playerWidth/2f, -floorHeight-playerYoffset, 
@@ -90,28 +93,9 @@ public class PlayScreen implements Screen {
 		player.setXboundaries(-BunnehStormGame.V_WIDTH/2, (BunnehStormGame.V_WIDTH/2)-playerRect.width);
 		hud.setPlayer(player);
 		
-		// create the spawn points for enemies/obstacles
-		esc = new ObjectSpawnerContainer();
-
-		CrusherSpawner cs = new CrusherSpawner(-BunnehStormGame.V_WIDTH/2, (BunnehStormGame.V_WIDTH/2)-5f, 4f);
-		cs.setFallSpeed(0.7f);
-		cs.setTarget(player);
-		cs.setFollowTarget(true);
-		cs.setFollowTargetLimit(BunnehStormGame.V_WIDTH/3f);
-		cs.setSize(20f, 20f);
-		cs.setIncreaseSpawnInterval(true);
-		cs.setSpawnIntervalIncrement(0.08f);
-		cs.setSpawnIntervalMin(0.5f);
-		cs.setIncrementFallSpeed(true);
-		cs.setFallSpeedIncrement(0.08f);
-		cs.setFallSpeedMax(5f);
-		esc.addObjectSpawner(cs);
-
-		SniperEnemySpawner ses = new SniperEnemySpawner(-BunnehStormGame.V_WIDTH/2, (BunnehStormGame.V_WIDTH/2)-6f);
-		ses.setSpawnIntervalRange(5f, 10f);
-		ses.setTarget(player);
-		ses.setBulletInterval(0.8f);
-		esc.addObjectSpawner(ses);
+		// create the first levels
+		levelHandler.createLevels();
+		
 
 		// create input multiplexer
 		createInput();
@@ -147,9 +131,11 @@ public class PlayScreen implements Screen {
 			return;
 		}
 		
-		esc.update(delta);
+		//esc.update(delta);
 		timeAccum += delta;
 		while(timeAccum >= timestep) {
+			// update level handler
+			levelHandler.update(timestep);
 			// check collisions as desired
 			game.collisionHandler.checkCollision(player, game.goHandler.getObstacles());
 			game.collisionHandler.checkCollision(game.goHandler.getObstacles(), game.goHandler.getPlayerBullets(), floor);
@@ -166,10 +152,11 @@ public class PlayScreen implements Screen {
 			game.goHandler.debugRender(debugRender, camera, player, floor);
 			batch.setProjectionMatrix(camera.combined);
 			batch.begin();
-			int totalObjects = game.goHandler.getObjectsSize();
-			totalObjects += player != null ? 1 : 0;
-			totalObjects += floor != null ? 1 : 0;
-			font.draw(batch, "Screen objects: " + totalObjects, 
+			//int totalObjects = game.goHandler.getObjectsSize();
+			//totalObjects += player != null ? 1 : 0;
+			//totalObjects += floor != null ? 1 : 0;
+			int currentLevel = levelHandler.getCurrentLevel().getLvlNumber();
+			font.draw(batch, "Level  -  " + currentLevel, 
 					-BunnehStormGame.V_WIDTH/2, BunnehStormGame.V_HEIGHT/2);
 			hud.render(batch);
 			batch.end();
@@ -214,6 +201,7 @@ public class PlayScreen implements Screen {
 		game.goHandler.disposeAll();
 		player.dispose();
 		floor.dispose();
+		levelHandler.dispose();
 		if(background != null) background.dispose();
 		if(debugRender != null) debugRender.dispose();
 		if(font != null) font.dispose();

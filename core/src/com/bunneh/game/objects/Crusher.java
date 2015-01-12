@@ -39,12 +39,12 @@ public class Crusher extends Enemy {
 		if(distance < targetDistance) {
 			setFollowTarget(false);
 			Rectangle tr = target.getRect();
-			float angle = (float) MathChiches.getAngle(rect.x, rect.y, (tr.x+tr.width/2), (tr.y+tr.height/2));
+			float angle = (float) MathChiches.getAngle(rect.x+rect.width/2, rect.y, (tr.x+tr.width/2), (tr.y+tr.height/2));
 			this.velocity = MathChiches.getAngleBasedMovement(angle, speed);
 			return;
 		}
 		float accelSpeed = (speed*0.01f);
-		Vector2 v = MathChiches.vectorToTarget(rect.x, rect.y, 
+		Vector2 v = MathChiches.vectorToTarget(rect.x+rect.width/2, rect.y, 
 				target.getRect().x, target.getRect().y);
 		rect.x += v.x*accelSpeed;
 		rect.y += v.y*accelSpeed;
@@ -99,6 +99,10 @@ public class Crusher extends Enemy {
 	
 	public void setFollowTargetLimit(float distance) {
 		this.targetDistance = distance;
+	}
+	
+	public void setHealth(int health) {
+		this.health = health;
 	}
 
 }
