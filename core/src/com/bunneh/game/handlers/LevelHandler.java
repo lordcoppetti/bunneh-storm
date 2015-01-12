@@ -9,7 +9,7 @@ import com.bunneh.game.spawners.EnemySpawner.EnemyType;
 
 public class LevelHandler {
 
-	private static final int levelAmount = 99;
+	private static final int levelAmount = 30;
 	private static final int createBy = 3;
 	
 	private Level level;
@@ -56,6 +56,8 @@ public class LevelHandler {
 		float n = level.getLvlNumber();
 		if(n <= levelAmount) {
 			if(n <= 3) {
+				// Values difficulty 1
+				changeLevelTimer = 20;
 				float spawnInterval = 1.5f/n;
 				Vector2 enemySize = new Vector2(15f, 15f);
 				if(n == 3) {
@@ -67,6 +69,7 @@ public class LevelHandler {
 				es1.setEnemyHealth((int) n*5);
 				level.addEnemySpawner(es1);
 			} else if(n <= 6) {
+				// Values difficulty 2
 				changeLevelTimer = 30;
 				Vector2 enemySize = new Vector2(20f, 20f);
 				float spawnInterval = 2/n;
@@ -90,15 +93,58 @@ public class LevelHandler {
 				}
 				level.addEnemySpawner(es1);
 			} else if(n <= 9) {
-				// TODO: Values difficulty 3
-
+				// Values difficulty 3
+				changeLevelTimer = 30;
+				float spawnInterval = 6f - (n*0.5f);
+				Vector2 enemySize = new Vector2(15f, 15f);
+				EnemySpawner es1 = new EnemySpawner(EnemyType.Sniper, spawnInterval, enemySize);
+				es1.setBulletInterval(0.2f*n);
+				es1.setEnemySpeed(0.8f);
+				es1.setBulletSpeed(n*0.3f);
+				es1.setEnemyTarget(player);
+				float yLimit = -20;
+				es1.setFireLimitOnY(yLimit);
+				float spawnInterval2 = 9f - (n*0.8f);
+				Vector2 enemySize2 = new Vector2(20f, 20f);
+				EnemySpawner es2 = new EnemySpawner(EnemyType.Obstacle, spawnInterval2, enemySize2);
+				es2.setEnemySpeed(n*0.3f);
+				level.addEnemySpawner(es1);
+				level.addEnemySpawner(es2);
 			} else if(n == 10) {
-				// TODO: Values difficulty 4
+				// Values difficulty 4
+				changeLevelTimer = 60;
+				Vector2 enemySize = new Vector2(18f, 18f);
+				EnemySpawner es1 = new EnemySpawner(EnemyType.Obstacle, 0.5f, enemySize);
+				es1.setEnemySpeed(2.5f);
+
+				Vector2 enemySize2 = new Vector2(10f, 10f);
+				EnemySpawner es2 = new EnemySpawner(EnemyType.Obstacle, 0.7f, enemySize2);
+				es2.setEnemySpeed(1.5f);
+				es2.setEnemyTarget(player);
+				es2.setFollowTarget(true);
+				es2.setEnemyHealth(5);
+				
+				level.addEnemySpawner(es1);
+				level.addEnemySpawner(es2);
 
 			} else if(n <= 15) {
+				changeLevelTimer = 30;
 				// TODO: Values difficulty 5
 
+			} else if(n <= 20) {
+				// TODO: Values difficulty 6
+
+			} else if(n <= 25) {
+				// TODO: Values difficulty 7
+
+			} else if(n <= 29) {
+				// TODO: Values difficulty 8
+
+			} else if(n == levelAmount) {
+				// TODO: Final destination
+
 			}
+
 		}
 	}
 

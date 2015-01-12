@@ -18,6 +18,7 @@ public class SniperEnemy extends Enemy {
 	private int bulletPower = 1;
 
 	private GameObject target;
+	private float fireYlimit;
 	
 	public SniperEnemy(float x, float y, float width, float height, float enemySpeed) {
 		super(new Rectangle(x, y, width, height));
@@ -33,11 +34,12 @@ public class SniperEnemy extends Enemy {
 
 	private void fire(float delta) {
 		if(target == null) return;
+		if(rect.y <= fireYlimit) return;
 		bulletTimer += delta;
 		if(bulletTimer >= bulletInterval) {
 			Rectangle targetRect = target.getRect();
 			float angle = (float) MathChiches.getAngle(rect.x, rect.y, (targetRect.x+targetRect.width/2), (targetRect.y+targetRect.height/2));
-			Bullet b = new Bullet(bulletPower, rect.x, rect.y, angle, bulletSpeed);
+			Bullet b = new Bullet(bulletPower, rect.x+rect.width/2, rect.y, angle, bulletSpeed);
 			b.setAllyBullet(false);
 			BunnehStormGame game = (BunnehStormGame) Gdx.app.getApplicationListener();
 			game.goHandler.addEnemyBullet(b);
@@ -101,6 +103,10 @@ public class SniperEnemy extends Enemy {
 	
 	public void setBulletInterval(float interval) {
 		this.bulletInterval = interval;
+	}
+
+	public void setFireLimitOnY(float yLimit) {
+		this.fireYlimit = yLimit;
 	}
 
 }

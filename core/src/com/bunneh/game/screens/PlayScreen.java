@@ -152,7 +152,7 @@ public class PlayScreen implements Screen {
 			//totalObjects += player != null ? 1 : 0;
 			//totalObjects += floor != null ? 1 : 0;
 			int currentLevel = game.levelHandler.getCurrentLevel().getLvlNumber();
-			font.draw(batch, "Level  -  " + currentLevel, 
+			font.draw(batch, "Level : " + currentLevel, 
 					-BunnehStormGame.V_WIDTH/2, BunnehStormGame.V_HEIGHT/2);
 			hud.render(batch);
 			batch.end();

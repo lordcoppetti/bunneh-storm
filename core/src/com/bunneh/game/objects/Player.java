@@ -143,10 +143,11 @@ public class Player extends GameObject {
 
 	@Override
 	public boolean collided(GameObject target) {
-		if(invulnerable) return false;
 		if(target instanceof Enemy) {
-			lives -= 1;
-			invulnerable = true;
+			if(!invulnerable) {
+				lives -= 1;
+				invulnerable = true;
+			}
 			target.destroy = true;
 			if(lives < 0) {
 				// cap it
@@ -158,8 +159,10 @@ public class Player extends GameObject {
 		if(target instanceof Bullet) {
 			Bullet b = (Bullet) target;
 			if(b.isAllyBullet()) return false;
-			lives -= 1;
-			invulnerable = true;
+			if(!invulnerable) {
+				lives -= 1;
+				invulnerable = true;
+			}
 			target.destroy = true;
 			if(lives < 0) {
 				// cap it

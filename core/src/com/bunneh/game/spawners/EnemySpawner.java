@@ -7,12 +7,13 @@ import com.badlogic.gdx.math.Vector2;
 import com.bunneh.game.BunnehStormGame;
 import com.bunneh.game.objects.Crusher;
 import com.bunneh.game.objects.GameObject;
+import com.bunneh.game.objects.SniperEnemy;
 
 public class EnemySpawner {
 
 	public enum EnemyType {
 		Obstacle,
-		Shooter,
+		Sniper,
 	}
 
 	private static float defaultLeftBoundary = (-BunnehStormGame.V_WIDTH/2);
@@ -26,9 +27,12 @@ public class EnemySpawner {
 	private int enemyHealth;
 	private float enemySpeed;
 	private Vector2 enemySize;
+	private float bulletInterval = 0.2f;
+	private float bulletSpeed = 4f;
 
 	private GameObject enemyTarget = null;
 	private float distanceToTargetLimit = BunnehStormGame.V_HEIGHT/3.5f;
+	private float fireLimitOnY;
 	private boolean enemyFollowTarget;
 	
 	// spawner control
@@ -73,7 +77,7 @@ public class EnemySpawner {
 	}
 
 	private void spawnEnemy() {
-		float x = MathUtils.random(leftBoundary+enemySize.x, rightBoundary-enemySize.x);
+		float x = MathUtils.random(leftBoundary, rightBoundary+(enemySize.x*2));
 		float y = defaultTopBoundary;
 		if(bottomBoundary != 0 && topBoundary != 0) y = MathUtils.random(bottomBoundary, topBoundary);
 		y = y + enemySize.y;
@@ -89,8 +93,14 @@ public class EnemySpawner {
 			}
 			game.goHandler.addEnemy(c);
 			break;
-		case Shooter:
-
+		case Sniper:
+			SniperEnemy s = new SniperEnemy(x, y, enemySize.x, enemySize.y, enemySpeed);
+			s.setBulletInterval(bulletInterval);
+			s.setBulletSpeed(bulletSpeed);
+			s.setTarget(enemyTarget);
+			s.setFireLimitOnY(fireLimitOnY);
+			game.goHandler.addEnemy(s);
+			break;
 		default:
 			break;
 		}
@@ -179,9 +189,30 @@ public class EnemySpawner {
 	public void setTimeLimit(float timeLimit) {
 		this.timeLimit = timeLimit;
 	}
+
+	public float getBulletInterval() {
+		return bulletInterval;
+	}
+
+	public void setBulletInterval(float bulletInterval) {
+		this.bulletInterval = bulletInterval;
+	}
+
+	public float getBulletSpeed() {
+		return bulletSpeed;
+	}
+
+	public void setBulletSpeed(float bulletSpeed) {
+		this.bulletSpeed = bulletSpeed;
+	}
 	
 	public boolean isDone() {
 		return done;
+	}
+
+	public void setFireLimitOnY(float yLimit) {
+		this.fireLimitOnY = yLimit;
+		
 	}
 
 }
