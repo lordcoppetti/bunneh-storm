@@ -1,12 +1,18 @@
 package com.bunneh.game.objects;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 
 public class Floor extends GameObject {
 	
 	private Rectangle rect;
+	private TextureRegion textureRegion;
 
+	public Floor(TextureRegion region, Rectangle floorRect) {
+		this.textureRegion = region;
+		this.rect = floorRect;
+	}
 	public Floor(Rectangle floorRect) {
 		this.rect = floorRect;
 	}
@@ -19,13 +25,13 @@ public class Floor extends GameObject {
 
 	@Override
 	public void render(SpriteBatch batch) {
-		// TODO Auto-generated method stub
-
+		batch.draw(textureRegion, rect.x-9, rect.y, rect.width+18, rect.height+14);
 	}
 
 	@Override
 	public void render(SpriteBatch batch, float alphaModulation) {
-		// TODO Auto-generated method stub
+		batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, alphaModulation);
+		batch.draw(textureRegion, rect.x-9, rect.y, rect.width+18, rect.height+14);
 
 	}
 

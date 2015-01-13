@@ -9,7 +9,7 @@ import com.bunneh.game.spawners.EnemySpawner.EnemyType;
 
 public class LevelHandler {
 
-	private static final int levelAmount = 30;
+	private static final int levelAmount = 99;
 	private static final int createBy = 3;
 	
 	private Level level;
@@ -38,6 +38,12 @@ public class LevelHandler {
 		for(int i = from ; i < to ; i++) {
 			Level level = new Level(i+1);
 			prepareLevel(level);
+			// special cases to stop and create only one (special level)
+			if(level.getLvlNumber() == 10) {
+				levelArray.add(level);
+				levelsCreated++;
+				break;
+			}
 			levelArray.add(level);
 			levelsCreated++;
 		}
@@ -75,9 +81,10 @@ public class LevelHandler {
 				float spawnInterval = 2/n;
 				EnemySpawner es1;
 				if(n == 5) {
-					changeLevelTimer = 20;
+					changeLevelTimer = 15;
 				}
 				if(n == 6) {
+					changeLevelTimer = 20;
 					spawnInterval = 2.2f;
 					enemySize.x = 18f;
 					enemySize.y = 18f;
@@ -127,11 +134,19 @@ public class LevelHandler {
 				level.addEnemySpawner(es1);
 				level.addEnemySpawner(es2);
 
-			} else if(n <= 15) {
-				changeLevelTimer = 30;
-				// TODO: Values difficulty 5
-
-			} else if(n <= 20) {
+			} else if(n <= 13) {
+				changeLevelTimer = 20;
+				// Values difficulty 5
+				EnemySpawner es1 = new EnemySpawner(EnemyType.Sniper, 1f, new Vector2(15f, 15f));
+				es1.setEnemyHealth(10);
+				es1.setEnemyTarget(player);
+				es1.setEnemySpeed(2.5f);
+				es1.setBulletInterval(0.4f);
+				float yLimit = -10;
+				es1.setFireLimitOnY(yLimit);
+				
+				level.addEnemySpawner(es1);
+			} else if(n <= 17) {
 				// TODO: Values difficulty 6
 
 			} else if(n <= 25) {

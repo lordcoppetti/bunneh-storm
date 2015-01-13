@@ -1,6 +1,8 @@
 package com.bunneh.game.objects;
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.bunneh.game.BunnehStormGame;
@@ -18,12 +20,22 @@ public class Bullet extends GameObject {
 	
 	private Vector2 velocity = new Vector2(0, 0);
 	private float bulletSpeed;
+	private Sprite sprite;
 	
-	public Bullet(int attackPower, float x, float y, float angle, float bulletSpeed) {
+	public Bullet(Sprite sprite, int attackPower, float x, float y, float angle, float bulletSpeed, float width, float height) {
 		this.attackPower = attackPower;
+		this.bulletWidth = width;
+		this.bulletHeight = height;
 		rect = new Rectangle(x-bulletWidth/2, y, bulletWidth, bulletHeight);
 		this.angle = angle;
 		this.velocity = MathChiches.getAngleBasedMovement(angle, bulletSpeed);
+		this.sprite = sprite;
+		sprite.setOrigin(rect.width/2, rect.height/2);
+		sprite.setBounds(rect.x, rect.y, rect.width, rect.height);
+		sprite.flip(false, true);
+		float spriteAngle = angle*2;
+		// TODO: Fix this fucking angle
+		sprite.setRotation(spriteAngle);
 	}
 
 	@Override
@@ -31,6 +43,8 @@ public class Bullet extends GameObject {
 		if(needsDestroy()) return;
 		if(checkOffScreenDestroy()) return;;
 		updatePosition();
+		sprite.setX(rect.x);
+		sprite.setY(rect.y);
 	}
 
 	private void updatePosition() {
@@ -57,13 +71,15 @@ public class Bullet extends GameObject {
 
 	@Override
 	public void render(SpriteBatch batch) {
-		// TODO Auto-generated method stub
+		if(sprite == null) return;
+		sprite.draw(batch);
 
 	}
 
 	@Override
 	public void render(SpriteBatch batch, float alphaModulation) {
-		// TODO Auto-generated method stub
+		if(sprite == null) return;
+		sprite.draw(batch, alphaModulation);
 
 	}
 
@@ -103,6 +119,11 @@ public class Bullet extends GameObject {
 
 	public void setAllyBullet(boolean isAllyBullet) {
 		this.isAllyBullet = isAllyBullet;
+	}
+	
+	public void setBulletSize(float width, float height) {
+		this.bulletWidth = width;
+		this.bulletHeight = height;
 	}
 
 }

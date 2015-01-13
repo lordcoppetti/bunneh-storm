@@ -8,17 +8,24 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.bunneh.game.BunnehStormGame;
 import com.bunneh.game.InputAdapter;
 import com.bunneh.game.handlers.LevelHandler;
 import com.bunneh.game.objects.Floor;
 import com.bunneh.game.objects.Hud;
 import com.bunneh.game.objects.Player;
+import com.bunneh.game.utils.RegionComparator;
+import com.bunneh.game.utils.TextureAtlasChiches;
 
 /*
  * This PlayScreen doesn't use box2d or any physics engine.
@@ -33,9 +40,10 @@ public class PlayScreen implements Screen {
 	private final float timestep = 1 / 60f;
 	private float timeAccum = 0f;
 
+	public static TextureAtlas atlas;
+
 	private BunnehStormGame game;
 	private Color backColor = new Color(0f, 0f, 0f, 1f);
-	private Texture background;
 	private OrthographicCamera camera;
 	private SpriteBatch batch;
 	private BitmapFont font;
@@ -46,16 +54,33 @@ public class PlayScreen implements Screen {
 
 	// custom game objects for this screen
 	private Floor floor;
+
+	private Texture background;
+	private Texture moon;
+	private Texture birdman;
+	private float birdmanWidth;
+	private float birdmanHeight;
 	
 	public PlayScreen(BunnehStormGame game) {
 		gameOver = false;
 		this.game = game;
 	}
+	
 
 	@Override
 	public void show() {
 		// initialize common game objects
 		game.goHandler.initialize();
+		
+		// load the game assets
+		atlas = new TextureAtlas(Gdx.files.internal("assets.atlas"));
+		Array<AtlasRegion> assetsRegions = atlas.getRegions();
+		assetsRegions.sort(new RegionComparator());
+		
+		Array<AtlasRegion> idleRegions = TextureAtlasChiches.getRegions(atlas, "idle", "-", 1);
+		Array<AtlasRegion> shootingRegions = TextureAtlasChiches.getRegions(atlas, "shooting", "-", 0);
+		Array<AtlasRegion> runningRegions = TextureAtlasChiches.getRegions(atlas, "running", "-", 0);
+		Array<AtlasRegion> runningShootingRegions = TextureAtlasChiches.getRegions(atlas, "runningShooting", "-", 0);
 
 		// initialize screen stuff
 		camera = new OrthographicCamera(BunnehStormGame.V_WIDTH, BunnehStormGame.V_HEIGHT);
@@ -69,20 +94,39 @@ public class PlayScreen implements Screen {
 		// for debug rendering
 		if(game.debugRender) debugRender = new ShapeRenderer();
 		
+		// the galaxy background
+		background = new Texture(Gdx.files.internal("galaxy.png"));
+		background.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+
+		// the bird :F
+		birdman = new Texture(Gdx.files.internal("birdman.png"));
+		birdman.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		birdmanWidth = birdman.getWidth()/3;
+		birdmanHeight = birdman.getHeight()/3;
+		
+		
 		// create the floor (custom game object)
-		float floorHeight = BunnehStormGame.V_HEIGHT / 4f; // 1/4 of the screen
-		 floor = new Floor(new Rectangle(
+		float floorHeight = BunnehStormGame.V_HEIGHT / 14f; // 1/14 of the screen cuz fuck u
+		moon = new Texture(Gdx.files.internal("moon.png"));
+		moon.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		floor = new Floor(new TextureRegion(moon), new Rectangle(
 			-BunnehStormGame.V_WIDTH/2, -BunnehStormGame.V_HEIGHT/2,
 			BunnehStormGame.V_WIDTH, floorHeight));
 		
 		// create the player (custom game object)
-		float playerWidth = 20f;
-		float playerHeight = 25f;
-		float playerYoffset = 3f;
+		float playerWidth = 15f;
+		float playerHeight = 35f;
+		float playerYoffset = floor.getRect().getHeight()/0.9f;
 		Rectangle playerRect = new Rectangle(
-				-playerWidth/2f, -floorHeight-playerYoffset, 
+				-playerWidth/2f, floor.getRect().y+playerYoffset, 
 				playerWidth, playerHeight);
-		Player player = new Player(playerRect);
+		float spriteWidth = playerRect.width*2.8f;
+		float spriteHeight = playerRect.height*1.8f;
+		float offsetX = playerRect.width/1.1f;
+		float offsetY = playerRect.height/3.6f;
+		Player player = new Player(idleRegions, runningRegions, runningShootingRegions, shootingRegions, 
+				playerRect, offsetX, offsetY);
+		player.setSpriteSize(spriteWidth, spriteHeight);
 		player.setXboundaries(-BunnehStormGame.V_WIDTH/2, (BunnehStormGame.V_WIDTH/2)-playerRect.width);
 		hud.setPlayer(player);
 
@@ -144,6 +188,22 @@ public class PlayScreen implements Screen {
 		// Interpolate game objects if physics engine is used!
 		
 		// render objects
+		camera.update();
+		//game.goHandler.render(batch, camera);
+		batch.setProjectionMatrix(camera.combined);
+		batch.begin();
+		batch.draw(background, -(BunnehStormGame.V_WIDTH/2)-9, -BunnehStormGame.V_HEIGHT/2, 
+				BunnehStormGame.V_WIDTH+18, BunnehStormGame.V_HEIGHT);
+		batch.draw(birdman, -(BunnehStormGame.V_WIDTH/2)-8, -(BunnehStormGame.V_HEIGHT/2)+24,
+				birdmanWidth, birdmanHeight);
+		floor.render(batch);
+		game.levelHandler.getPlayer().render(batch);
+		game.goHandler.render(batch, camera);
+		int currentLevel = game.levelHandler.getCurrentLevel().getLvlNumber();
+		font.draw(batch, "Level : " + currentLevel, 
+				-BunnehStormGame.V_WIDTH/2, BunnehStormGame.V_HEIGHT/2);
+		hud.render(batch);
+		batch.end();
 		if(game.debugRender) {
 			game.goHandler.debugRender(debugRender, camera, game.levelHandler.getPlayer(), floor);
 			batch.setProjectionMatrix(camera.combined);
@@ -151,16 +211,8 @@ public class PlayScreen implements Screen {
 			//int totalObjects = game.goHandler.getObjectsSize();
 			//totalObjects += player != null ? 1 : 0;
 			//totalObjects += floor != null ? 1 : 0;
-			int currentLevel = game.levelHandler.getCurrentLevel().getLvlNumber();
-			font.draw(batch, "Level : " + currentLevel, 
-					-BunnehStormGame.V_WIDTH/2, BunnehStormGame.V_HEIGHT/2);
-			hud.render(batch);
 			batch.end();
-			
-		} else {
-			game.goHandler.render(batch, camera);
 		}
-		
 	}
 
 
@@ -198,9 +250,12 @@ public class PlayScreen implements Screen {
 		floor.dispose();
 		game.levelHandler.dispose();
 		if(background != null) background.dispose();
+		if(moon != null) moon.dispose();
+		if(birdman != null) birdman.dispose();
 		if(debugRender != null) debugRender.dispose();
 		if(font != null) font.dispose();
 		batch.dispose();
+		atlas.dispose();
 		Gdx.input.setInputProcessor(null);
 	}
 	

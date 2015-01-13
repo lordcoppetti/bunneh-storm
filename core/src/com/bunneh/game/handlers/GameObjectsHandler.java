@@ -169,25 +169,18 @@ public final class GameObjectsHandler {
 	}
 
 	public void render(SpriteBatch batch, OrthographicCamera camera) {
-		batch.setProjectionMatrix(camera.combined);
-		batch.begin();
 		for(GameObject go : obstacles) go.render(batch);
 		for(GameObject go : enemies) go.render(batch);
-		for(GameObject go : playerBullets) go.render(batch);
 		for(GameObject go : enemyBullets) go.render(batch);
-		batch.end();
+		for(GameObject go : playerBullets) go.render(batch);
 		
 	}
 
 	public void render(SpriteBatch batch, OrthographicCamera camera, float alphaModulation) {
-		batch.setProjectionMatrix(camera.combined);
-		batch.begin();
 		for(GameObject go : obstacles) go.render(batch, alphaModulation);
 		for(GameObject go : enemies) go.render(batch, alphaModulation);
 		for(GameObject go : playerBullets) go.render(batch, alphaModulation);
 		for(GameObject go : enemyBullets) go.render(batch, alphaModulation);
-		batch.end();
-		
 	}
 
 }

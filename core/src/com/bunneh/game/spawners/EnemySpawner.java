@@ -1,6 +1,8 @@
 package com.bunneh.game.spawners;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -8,6 +10,7 @@ import com.bunneh.game.BunnehStormGame;
 import com.bunneh.game.objects.Crusher;
 import com.bunneh.game.objects.GameObject;
 import com.bunneh.game.objects.SniperEnemy;
+import com.bunneh.game.screens.PlayScreen;
 
 public class EnemySpawner {
 
@@ -84,9 +87,11 @@ public class EnemySpawner {
 		BunnehStormGame game = (BunnehStormGame) Gdx.app.getApplicationListener();
 		switch (type) {
 		case Obstacle:
-			Crusher c = new Crusher(new Rectangle(x, y, enemySize.x, enemySize.y), enemySpeed);
+			Sprite cSprite = new Sprite(PlayScreen.atlas.findRegion("evilWatermelon"));
+			Crusher c = new Crusher(cSprite, new Rectangle(x, y, enemySize.x, enemySize.y), enemySpeed);
 			c.setHealth(enemyHealth);
 			if(enemyTarget != null) {
+				cSprite.setColor(Color.YELLOW);
 				c.setTarget(enemyTarget);
 				c.setFollowTarget(enemyFollowTarget);
 				c.setFollowTargetLimit(distanceToTargetLimit);
@@ -94,7 +99,8 @@ public class EnemySpawner {
 			game.goHandler.addEnemy(c);
 			break;
 		case Sniper:
-			SniperEnemy s = new SniperEnemy(x, y, enemySize.x, enemySize.y, enemySpeed);
+			Sprite sSprite = new Sprite(PlayScreen.atlas.findRegion("evilWatermelon"));
+			SniperEnemy s = new SniperEnemy(sSprite, x, y, enemySize.x, enemySize.y, enemySpeed);
 			s.setBulletInterval(bulletInterval);
 			s.setBulletSpeed(bulletSpeed);
 			s.setTarget(enemyTarget);

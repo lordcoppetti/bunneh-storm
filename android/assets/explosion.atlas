@@ -1,0 +1,116 @@
+explosion.png
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+watermelonExplosion-0
+  rotate: true
+  xy: 217, 670
+  size: 102, 133
+  orig: 372, 333
+  offset: 129, 111
+  index: -1
+watermelonExplosion-1
+  rotate: true
+  xy: 259, 551
+  size: 117, 144
+  orig: 372, 333
+  offset: 122, 105
+  index: -1
+watermelonExplosion-10
+  rotate: false
+  xy: 2, 310
+  size: 255, 244
+  orig: 372, 333
+  offset: 60, 55
+  index: -1
+watermelonExplosion-11
+  rotate: false
+  xy: 345, 296
+  size: 268, 253
+  orig: 372, 333
+  offset: 55, 51
+  index: -1
+watermelonExplosion-12
+  rotate: false
+  xy: 670, 282
+  size: 284, 263
+  orig: 372, 333
+  offset: 47, 46
+  index: -1
+watermelonExplosion-13
+  rotate: false
+  xy: 670, 2
+  size: 304, 278
+  orig: 372, 333
+  offset: 36, 36
+  index: -1
+watermelonExplosion-14
+  rotate: false
+  xy: 345, 2
+  size: 323, 292
+  orig: 372, 333
+  offset: 25, 27
+  index: -1
+watermelonExplosion-15
+  rotate: false
+  xy: 2, 2
+  size: 341, 306
+  orig: 372, 333
+  offset: 15, 18
+  index: -1
+watermelonExplosion-2
+  rotate: true
+  xy: 858, 547
+  size: 133, 154
+  orig: 372, 333
+  offset: 114, 100
+  index: -1
+watermelonExplosion-3
+  rotate: false
+  xy: 858, 682
+  size: 150, 166
+  orig: 372, 333
+  offset: 106, 94
+  index: -1
+watermelonExplosion-4
+  rotate: true
+  xy: 228, 850
+  size: 166, 177
+  orig: 372, 333
+  offset: 98, 88
+  index: -1
+watermelonExplosion-5
+  rotate: true
+  xy: 407, 750
+  size: 182, 190
+  orig: 372, 333
+  offset: 91, 81
+  index: -1
+watermelonExplosion-6
+  rotate: true
+  xy: 407, 551
+  size: 197, 202
+  orig: 372, 333
+  offset: 84, 75
+  index: -1
+watermelonExplosion-7
+  rotate: false
+  xy: 2, 556
+  size: 213, 213
+  orig: 372, 333
+  offset: 77, 69
+  index: -1
+watermelonExplosion-8
+  rotate: true
+  xy: 2, 783
+  size: 227, 224
+  orig: 372, 333
+  offset: 71, 64
+  index: -1
+watermelonExplosion-9
+  rotate: false
+  xy: 615, 547
+  size: 241, 234
+  orig: 372, 333
+  offset: 65, 59
+  index: -1

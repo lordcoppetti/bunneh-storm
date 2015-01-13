@@ -1,10 +1,14 @@
 package com.bunneh.game.objects;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.bunneh.game.BunnehStormGame;
+import com.bunneh.game.screens.PlayScreen;
 import com.bunneh.game.utils.MathChiches;
 
 public class SniperEnemy extends Enemy {
@@ -19,17 +23,24 @@ public class SniperEnemy extends Enemy {
 
 	private GameObject target;
 	private float fireYlimit;
+	private Sprite sprite;
+	private Color color = Color.RED;
 	
-	public SniperEnemy(float x, float y, float width, float height, float enemySpeed) {
+	public SniperEnemy(Sprite sprite, float x, float y, float width, float height, float enemySpeed) {
 		super(new Rectangle(x, y, width, height));
 		this.speed = enemySpeed;
 		this.health = 15;
+		this.sprite = sprite;
+		this.sprite.setColor(color);
+		sprite.setBounds(rect.x, rect.y, rect.width, rect.height);
 	}
 
 	@Override
 	public void update(float delta) {
 		updatePosition();
 		fire(delta);
+		sprite.setX(rect.x);
+		sprite.setY(rect.y);
 	}
 
 	private void fire(float delta) {
@@ -39,7 +50,8 @@ public class SniperEnemy extends Enemy {
 		if(bulletTimer >= bulletInterval) {
 			Rectangle targetRect = target.getRect();
 			float angle = (float) MathChiches.getAngle(rect.x, rect.y, (targetRect.x+targetRect.width/2), (targetRect.y+targetRect.height/2));
-			Bullet b = new Bullet(bulletPower, rect.x+rect.width/2, rect.y, angle, bulletSpeed);
+			Sprite bSprite = new Sprite(PlayScreen.atlas.findRegion("watermelonBullet"));
+			Bullet b = new Bullet(bSprite, bulletPower, rect.x+rect.width/2, rect.y, angle, bulletSpeed, 4f, 9f);
 			b.setAllyBullet(false);
 			BunnehStormGame game = (BunnehStormGame) Gdx.app.getApplicationListener();
 			game.goHandler.addEnemyBullet(b);
@@ -62,13 +74,15 @@ public class SniperEnemy extends Enemy {
 
 	@Override
 	public void render(SpriteBatch batch) {
-		// TODO Auto-generated method stub
+		if(sprite == null) return;
+		sprite.draw(batch);
 		
 	}
 
 	@Override
 	public void render(SpriteBatch batch, float alphaModulation) {
-		// TODO Auto-generated method stub
+		if(sprite == null) return;
+		sprite.draw(batch, alphaModulation);
 		
 	}
 	

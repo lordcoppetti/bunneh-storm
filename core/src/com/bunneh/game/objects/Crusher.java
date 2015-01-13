@@ -1,5 +1,7 @@
 package com.bunneh.game.objects;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -12,6 +14,16 @@ public class Crusher extends Enemy {
 	private Vector2 velocity = new Vector2(0, 0);
 	private boolean followTarget = false;
 	private float targetDistance;
+	private Sprite sprite;
+
+	public Crusher(Sprite sprite, Rectangle rect, float speed) {
+		super(rect);
+		this.health = 20;
+		this.speed = speed;
+		this.velocity.y = -speed;
+		this.sprite = sprite;
+		sprite.setBounds(rect.x, rect.y, rect.width, rect.height);
+	}
 
 	public Crusher(Rectangle rect, float speed) {
 		super(rect);
@@ -23,6 +35,8 @@ public class Crusher extends Enemy {
 	@Override
 	public void update(float delta) {
 		updatePosition();
+		sprite.setX(rect.x);
+		sprite.setY(rect.y);
 	}
 
 	private void updatePosition() {
@@ -48,17 +62,19 @@ public class Crusher extends Enemy {
 				target.getRect().x, target.getRect().y);
 		rect.x += v.x*accelSpeed;
 		rect.y += v.y*accelSpeed;
+
 	}
 
 	@Override
 	public void render(SpriteBatch batch) {
-		// TODO Auto-generated method stub
-
+		if(sprite == null) return;
+		sprite.draw(batch);
 	}
 
 	@Override
 	public void render(SpriteBatch batch, float alphaModulation) {
-		// TODO Auto-generated method stub
+		if(sprite == null) return;
+		sprite.draw(batch, alphaModulation);
 
 	}
 

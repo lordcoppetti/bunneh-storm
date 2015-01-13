@@ -22,7 +22,7 @@ public class BunnehStormGame extends Game {
 	public static final float V_WIDTH = 300f;
 	public static final float V_HEIGHT = 300f;
 	
-	public boolean debugRender = true;
+	public boolean debugRender = false;
 	
 	// handlers
 	public GameObjectsHandler goHandler;
