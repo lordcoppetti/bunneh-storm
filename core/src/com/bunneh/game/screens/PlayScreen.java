@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
@@ -59,9 +60,6 @@ public class PlayScreen implements Screen {
 
 	private Texture background;
 	private Texture moon;
-	private Texture birdman;
-	private float birdmanWidth;
-	private float birdmanHeight;
 	
 	public PlayScreen(BunnehStormGame game) {
 		gameOver = false;
@@ -73,6 +71,7 @@ public class PlayScreen implements Screen {
 	public void show() {
 		// initialize common game objects
 		game.goHandler.initialize();
+
 		
 		// load the game assets
 		atlas = new TextureAtlas(Gdx.files.internal("assets.atlas"));
@@ -104,12 +103,6 @@ public class PlayScreen implements Screen {
 		background = new Texture(Gdx.files.internal("galaxy.png"));
 		background.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
-		// the bird :F
-		birdman = new Texture(Gdx.files.internal("birdman.png"));
-		birdman.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		birdmanWidth = birdman.getWidth()/3;
-		birdmanHeight = birdman.getHeight()/3;
-		
 		
 		// create the floor (custom game object)
 		float floorHeight = BunnehStormGame.V_HEIGHT / 14f; // 1/14 of the screen cuz fuck u
@@ -141,7 +134,15 @@ public class PlayScreen implements Screen {
 		
 		// create the first levels
 		game.levelHandler.createLevels();
-		
+
+		// the bird :F
+		Texture birdmanTexture = new Texture(Gdx.files.internal("birdman-glossy.png"));
+		birdmanTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		Sprite birdman = new Sprite(birdmanTexture);
+		birdman.setSize(birdman.getTexture().getWidth()/3, birdman.getTexture().getHeight()/3);
+		birdman.setPosition(floor.getRect().x-8, floor.getRect().getY()+25);
+		birdman.setColor(0.3f, 0.3f, 0.3f, 1);
+		game.levelHandler.setBirdman(birdman);
 
 		// create input multiplexer
 		createInput();
@@ -201,8 +202,7 @@ public class PlayScreen implements Screen {
 		batch.begin();
 		batch.draw(background, -(BunnehStormGame.V_WIDTH/2)-9, -BunnehStormGame.V_HEIGHT/2, 
 				BunnehStormGame.V_WIDTH+18, BunnehStormGame.V_HEIGHT);
-		batch.draw(birdman, -(BunnehStormGame.V_WIDTH/2)-8, -(BunnehStormGame.V_HEIGHT/2)+24,
-				birdmanWidth, birdmanHeight);
+		game.levelHandler.getBirdman().draw(batch);
 		floor.render(batch);
 		game.levelHandler.getPlayer().render(batch);
 		game.goHandler.render(batch, camera);
@@ -258,7 +258,6 @@ public class PlayScreen implements Screen {
 		game.levelHandler.dispose();
 		if(background != null) background.dispose();
 		if(moon != null) moon.dispose();
-		if(birdman != null) birdman.dispose();
 		if(debugRender != null) debugRender.dispose();
 		if(font != null) font.dispose();
 		batch.dispose();

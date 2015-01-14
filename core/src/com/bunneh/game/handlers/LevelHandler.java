@@ -1,5 +1,11 @@
 package com.bunneh.game.handlers;
 
+import aurelienribon.tweenengine.Timeline;
+import aurelienribon.tweenengine.Tween;
+import aurelienribon.tweenengine.TweenManager;
+
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -8,6 +14,7 @@ import com.bunneh.game.objects.Player;
 import com.bunneh.game.screens.PlayScreen;
 import com.bunneh.game.spawners.EnemySpawner;
 import com.bunneh.game.spawners.EnemySpawner.EnemyType;
+import com.bunneh.game.tween.SpriteAccessor;
 import com.bunneh.game.utils.TextureAtlasChiches;
 
 public class LevelHandler {
@@ -26,6 +33,10 @@ public class LevelHandler {
 	private boolean gameDone;
 
 	private Player player;
+	private Sprite birdman;
+
+	private TweenManager tm = new TweenManager();
+
 	// watermelon explosion regions
 	public Array<AtlasRegion> explosionRegions = TextureAtlasChiches.getRegions(PlayScreen.explosionAtlas, 
 			"watermelonExplosion", "-", 0);
@@ -59,6 +70,7 @@ public class LevelHandler {
 		level = levelArray.removeIndex(0);
 		if(level.getLvlNumber() > 1) {
 			levelJustChanged = true;
+			birdmanAction();
 		}
 	}
 	
@@ -69,8 +81,19 @@ public class LevelHandler {
 		}
 		level = levelArray.removeIndex(0);
 		levelJustChanged = true;
+		birdmanAction();
 	}
  
+	private void birdmanAction() {
+		Color o = birdman.getColor();
+		Color c = Color.WHITE;
+		Timeline.createSequence().beginSequence()
+		.push(Tween.to(birdman, SpriteAccessor.COLOR, 0.8f).target(c.r, c.g, c.b))
+		.push(Tween.to(birdman, SpriteAccessor.COLOR, 0.8f).target(o.r, o.g, o.b))
+		.end().start(tm);
+	}
+
+
 	private void prepareLevel(Level level) {
 		float n = level.getLvlNumber();
 		if(n <= levelAmount) {
@@ -178,6 +201,7 @@ public class LevelHandler {
 
 
 	public void update(float delta) {
+		tm.update(delta);
 		if(gameDone) {
 			win();
 			return;
@@ -211,6 +235,7 @@ public class LevelHandler {
 		levelsCreated = 1;
 		levelArray = null;
 		player.dispose();
+		birdman.getTexture().dispose();
 	}
 
 	public Level getLevel() {
@@ -241,6 +266,16 @@ public class LevelHandler {
 
 	public void setPlayer(Player player) {
 		this.player = player;
+	}
+
+
+	public Sprite getBirdman() {
+		return birdman;
+	}
+
+
+	public void setBirdman(Sprite birdman) {
+		this.birdman = birdman;
 	}
 
 }
