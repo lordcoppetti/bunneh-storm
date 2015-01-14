@@ -1,5 +1,10 @@
 package com.bunneh.game.screens;
 
+import aurelienribon.tweenengine.BaseTween;
+import aurelienribon.tweenengine.Tween;
+import aurelienribon.tweenengine.TweenCallback;
+import aurelienribon.tweenengine.TweenManager;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -11,6 +16,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.bunneh.game.BunnehStormGame;
 import com.bunneh.game.InputAdapter;
+import com.bunneh.game.tween.BitmapFontAccessor;
 
 public class GameOverScreen implements Screen {
 	
@@ -19,18 +25,25 @@ public class GameOverScreen implements Screen {
 	private Color backColor = new Color(0f, 0f, 0f, 1f);
 	private OrthographicCamera camera = new OrthographicCamera(BunnehStormGame.V_WIDTH, BunnehStormGame.V_HEIGHT);
 	private boolean spaceNeedsRelease;
+	private boolean ready = false;
+	
+	private TweenManager tweenM;
 	
 	@Override
 	public void show() {
 		font = new BitmapFont();
 		batch = new SpriteBatch();
+
+		tweenM = new TweenManager();
+		Tween.registerAccessor(BitmapFont.class, new BitmapFontAccessor());
+
 		if(Gdx.input.isKeyJustPressed(Keys.SPACE)) {
 			spaceNeedsRelease = true;
 		}
 		Gdx.input.setInputProcessor(new InputAdapter() {
 			@Override
 			public boolean keyDown(int keycode) {
-				if(keycode == Keys.SPACE && !spaceNeedsRelease) {
+				if(keycode == Keys.SPACE && !spaceNeedsRelease && ready) {
 					Game game = (Game) Gdx.app.getApplicationListener();
 					game.setScreen(new PlayScreen((BunnehStormGame) game));
 				}
@@ -44,6 +57,15 @@ public class GameOverScreen implements Screen {
 				return false;
 			}
 		});
+		
+		// create tween animations
+		Tween.set(font, BitmapFontAccessor.ALPHA).target(0).start(tweenM);
+		Tween.to(font, BitmapFontAccessor.ALPHA, 1f).target(1f).setCallback(new TweenCallback() {
+			@Override
+			public void onEvent(int arg0, BaseTween<?> arg1) {
+				ready = true;
+			}
+		}).start(tweenM);
 	}
 
 	@Override
@@ -51,6 +73,8 @@ public class GameOverScreen implements Screen {
 		Gdx.gl.glClearColor(backColor.r, backColor.g, backColor.b, backColor.a);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
+		tweenM.update(delta);
+
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
 		font.draw(batch, "Game Over", -BunnehStormGame.V_WIDTH/8, BunnehStormGame.V_HEIGHT/3.5f);

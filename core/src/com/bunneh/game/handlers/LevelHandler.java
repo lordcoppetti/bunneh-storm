@@ -1,11 +1,14 @@
 package com.bunneh.game.handlers;
 
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.bunneh.game.Level;
 import com.bunneh.game.objects.Player;
+import com.bunneh.game.screens.PlayScreen;
 import com.bunneh.game.spawners.EnemySpawner;
 import com.bunneh.game.spawners.EnemySpawner.EnemyType;
+import com.bunneh.game.utils.TextureAtlasChiches;
 
 public class LevelHandler {
 
@@ -16,10 +19,16 @@ public class LevelHandler {
 	private Array<Level> levelArray;
 	private int levelsCreated = 0;
 	private float timer = 0f;
-	private int changeLevelTimer = 20;
+	private int changeLevelTime = 20;
+	private int levelInterludeTime = 3;
+	private float levelInterludeTimer = 0f;
+	private boolean levelJustChanged = false;
 	private boolean gameDone;
 
 	private Player player;
+	// watermelon explosion regions
+	public Array<AtlasRegion> explosionRegions = TextureAtlasChiches.getRegions(PlayScreen.explosionAtlas, 
+			"watermelonExplosion", "-", 0);
 	
 	public LevelHandler(Player player) {
 		levelArray = new Array<Level>(levelAmount);
@@ -48,6 +57,9 @@ public class LevelHandler {
 			levelsCreated++;
 		}
 		level = levelArray.removeIndex(0);
+		if(level.getLvlNumber() > 1) {
+			levelJustChanged = true;
+		}
 	}
 	
 	public void changeLevel() {
@@ -56,6 +68,7 @@ public class LevelHandler {
 			return;
 		}
 		level = levelArray.removeIndex(0);
+		levelJustChanged = true;
 	}
  
 	private void prepareLevel(Level level) {
@@ -63,7 +76,7 @@ public class LevelHandler {
 		if(n <= levelAmount) {
 			if(n <= 3) {
 				// Values difficulty 1
-				changeLevelTimer = 20;
+				changeLevelTime = 20;
 				float spawnInterval = 1.5f/n;
 				Vector2 enemySize = new Vector2(15f, 15f);
 				if(n == 3) {
@@ -76,15 +89,15 @@ public class LevelHandler {
 				level.addEnemySpawner(es1);
 			} else if(n <= 6) {
 				// Values difficulty 2
-				changeLevelTimer = 30;
+				changeLevelTime = 30;
 				Vector2 enemySize = new Vector2(20f, 20f);
 				float spawnInterval = 2/n;
 				EnemySpawner es1;
 				if(n == 5) {
-					changeLevelTimer = 15;
+					changeLevelTime = 15;
 				}
 				if(n == 6) {
-					changeLevelTimer = 20;
+					changeLevelTime = 20;
 					spawnInterval = 2.2f;
 					enemySize.x = 18f;
 					enemySize.y = 18f;
@@ -101,7 +114,7 @@ public class LevelHandler {
 				level.addEnemySpawner(es1);
 			} else if(n <= 9) {
 				// Values difficulty 3
-				changeLevelTimer = 30;
+				changeLevelTime = 30;
 				float spawnInterval = 6f - (n*0.5f);
 				Vector2 enemySize = new Vector2(15f, 15f);
 				EnemySpawner es1 = new EnemySpawner(EnemyType.Sniper, spawnInterval, enemySize);
@@ -119,7 +132,7 @@ public class LevelHandler {
 				level.addEnemySpawner(es2);
 			} else if(n == 10) {
 				// Values difficulty 4
-				changeLevelTimer = 60;
+				changeLevelTime = 60;
 				Vector2 enemySize = new Vector2(18f, 18f);
 				EnemySpawner es1 = new EnemySpawner(EnemyType.Obstacle, 0.5f, enemySize);
 				es1.setEnemySpeed(2.5f);
@@ -135,7 +148,7 @@ public class LevelHandler {
 				level.addEnemySpawner(es2);
 
 			} else if(n <= 13) {
-				changeLevelTimer = 20;
+				changeLevelTime = 20;
 				// Values difficulty 5
 				EnemySpawner es1 = new EnemySpawner(EnemyType.Sniper, 1f, new Vector2(15f, 15f));
 				es1.setEnemyHealth(10);
@@ -169,8 +182,17 @@ public class LevelHandler {
 			win();
 			return;
 		}
+		// time to chill between levels
+		if(levelJustChanged) {
+			levelInterludeTimer += delta;
+			if(levelInterludeTimer >= levelInterludeTime) {
+				levelJustChanged = false;
+				levelInterludeTimer = 0f;
+			}
+			return;
+		}
 		timer += delta;
-		if(timer > changeLevelTimer) {
+		if(timer > changeLevelTime) {
 			changeLevel();
 			timer = 0;
 			return;

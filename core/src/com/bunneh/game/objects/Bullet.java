@@ -94,10 +94,6 @@ public class Bullet extends GameObject {
 
 	@Override
 	public boolean collided(GameObject target) {
-		if(target instanceof Enemy) {
-			destroy = true;
-			return true;
-		}
 		if(target instanceof Floor) {
 			destroy = true;
 			return true;

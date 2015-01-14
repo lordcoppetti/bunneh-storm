@@ -41,6 +41,8 @@ public class PlayScreen implements Screen {
 	private float timeAccum = 0f;
 
 	public static TextureAtlas atlas;
+	public static TextureAtlas explosionAtlas;
+
 
 	private BunnehStormGame game;
 	private Color backColor = new Color(0f, 0f, 0f, 1f);
@@ -76,6 +78,10 @@ public class PlayScreen implements Screen {
 		atlas = new TextureAtlas(Gdx.files.internal("assets.atlas"));
 		Array<AtlasRegion> assetsRegions = atlas.getRegions();
 		assetsRegions.sort(new RegionComparator());
+
+		explosionAtlas = new TextureAtlas(Gdx.files.internal("explosion.atlas"));
+		Array<AtlasRegion> explosionRegions = atlas.getRegions();
+		explosionRegions.sort(new RegionComparator());
 		
 		Array<AtlasRegion> idleRegions = TextureAtlasChiches.getRegions(atlas, "idle", "-", 1);
 		Array<AtlasRegion> shootingRegions = TextureAtlasChiches.getRegions(atlas, "shooting", "-", 0);
@@ -163,8 +169,9 @@ public class PlayScreen implements Screen {
 
 	@Override
 	public void render(float delta) {
-		Gdx.gl.glClearColor(backColor.r, backColor.g, backColor.b, backColor.a);
+		//Gdx.gl.glClearColor(backColor.r, backColor.g, backColor.b, backColor.a);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		Gdx.gl.glEnable(GL20.GL_TEXTURE_2D);
 
 		if(gameOver) {
 			gotoGameOverScreen();
@@ -256,6 +263,7 @@ public class PlayScreen implements Screen {
 		if(font != null) font.dispose();
 		batch.dispose();
 		atlas.dispose();
+		explosionAtlas.dispose();
 		Gdx.input.setInputProcessor(null);
 	}
 	

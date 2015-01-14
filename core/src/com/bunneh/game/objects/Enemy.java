@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 
 public abstract class Enemy extends GameObject {
+
+	protected static final float FRAME_DURATION = 1.0f / 30.0f;
 	
 	protected Rectangle rect;
 	

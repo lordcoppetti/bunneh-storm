@@ -60,7 +60,7 @@ public final class CollisionHandler {
 			Array<GameObject> playerBullets, Player player, Floor floor) {
 		for(GameObject e : enemies) {
 			if(e.getRect().overlaps(player.getRect())) {
-				player.collided(e);
+				e.collided(player);
 				continue;
 			}
 			if(e.getRect().overlaps(floor.getRect())) {
