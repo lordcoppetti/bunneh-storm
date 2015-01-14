@@ -137,8 +137,7 @@ public class Crusher extends Enemy {
 			health -= b.getAttackPower();
 			if(health <= 0) {
 				explode = true;
-				BunnehStormGame game = (BunnehStormGame) Gdx.app.getApplicationListener();
-				Player player = game.levelHandler.getPlayer();
+				Player player = BunnehStormGame.game.levelHandler.getPlayer();
 				player.addKillCount();
 			} 
 			playHitAnimation();

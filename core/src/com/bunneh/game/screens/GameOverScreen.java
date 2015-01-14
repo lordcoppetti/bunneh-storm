@@ -5,10 +5,9 @@ import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenCallback;
 import aurelienribon.tweenengine.TweenManager;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -44,8 +43,7 @@ public class GameOverScreen implements Screen {
 			@Override
 			public boolean keyDown(int keycode) {
 				if(keycode == Keys.SPACE && !spaceNeedsRelease && ready) {
-					Game game = (Game) Gdx.app.getApplicationListener();
-					game.setScreen(new PlayScreen((BunnehStormGame) game));
+					BunnehStormGame.game.initializeGame();
 				}
 				return false;
 			}

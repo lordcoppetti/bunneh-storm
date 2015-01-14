@@ -222,8 +222,7 @@ public class Player extends GameObject {
 		fireRequested = false;
 		Sprite bSprite = new Sprite(PlayScreen.atlas.findRegion("carrotBullet"));
 		Bullet newBullet = new Bullet(bSprite, attackPower, rect.x + (rect.width/2), rect.y + rect.height, 90f, bulletSpeed, 4f, 9f);
-		BunnehStormGame game = (BunnehStormGame) Gdx.app.getApplicationListener();
-		game.goHandler.addPlayerBullet(newBullet);
+		BunnehStormGame.game.goHandler.addPlayerBullet(newBullet);
 	}
 
 

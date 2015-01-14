@@ -18,6 +18,8 @@ import com.bunneh.game.screens.PlayScreen;
  */
 public class BunnehStormGame extends Game {
 	
+	public static BunnehStormGame game;
+	
 	public static final String TITLE = "Bunneh Storm", VERSION = "0.0.1-alpha";
 	public static final float V_WIDTH = 300f;
 	public static final float V_HEIGHT = 300f;
@@ -31,17 +33,23 @@ public class BunnehStormGame extends Game {
 
 	@Override
 	public void create() {
+		initializeGame();
+	}
+	
+	public void initializeGame() {
+		game = this;
 		goHandler = new GameObjectsHandler();
 		collisionHandler = new CollisionHandler();
-		setScreen(getPlayScreen());
+		levelHandler = new LevelHandler();
+		setScreen(getNewPlayScreen());
 	}
 
 	public Screen getMainMenuScreen() {
 		return new MainMenuScreen();
 	}
 
-	public Screen getPlayScreen() {
-		return new PlayScreen(this);
+	public Screen getNewPlayScreen() {
+		return new PlayScreen(game);
 	}
 	
 	public Screen getGameOverScreen() {

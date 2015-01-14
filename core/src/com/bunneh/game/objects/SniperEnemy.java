@@ -81,8 +81,7 @@ public class SniperEnemy extends Enemy {
 			Sprite bSprite = new Sprite(PlayScreen.atlas.findRegion("watermelonBullet"));
 			Bullet b = new Bullet(bSprite, bulletPower, rect.x+rect.width/2, rect.y, angle, bulletSpeed, 4f, 9f);
 			b.setAllyBullet(false);
-			BunnehStormGame game = (BunnehStormGame) Gdx.app.getApplicationListener();
-			game.goHandler.addEnemyBullet(b);
+			BunnehStormGame.game.goHandler.addEnemyBullet(b);
 			bulletTimer = 0f;
 		}
 	}
@@ -148,8 +147,7 @@ public class SniperEnemy extends Enemy {
 			health -= b.getAttackPower();
 			if(health <= 0) {
 				explode = true;
-				BunnehStormGame game = (BunnehStormGame) Gdx.app.getApplicationListener();
-				Player player = game.levelHandler.getPlayer();
+				Player player = BunnehStormGame.game.levelHandler.getPlayer();
 				player.addKillCount();
 			}
 			playHitAnimation();

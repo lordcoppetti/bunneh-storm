@@ -130,7 +130,7 @@ public class PlayScreen implements Screen {
 		hud.setPlayer(player);
 
 		// init level handler
-		game.levelHandler = new LevelHandler(player);
+		game.levelHandler.initializeLevelHandler(player);
 		
 		// create the first levels
 		game.levelHandler.createLevels();

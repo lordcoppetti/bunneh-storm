@@ -89,11 +89,10 @@ public class EnemySpawner {
 		float y = defaultTopBoundary;
 		if(bottomBoundary != 0 && topBoundary != 0) y = MathUtils.random(bottomBoundary, topBoundary);
 		y = y + enemySize.y;
-		BunnehStormGame game = (BunnehStormGame) Gdx.app.getApplicationListener();
 		switch (type) {
 		case Obstacle:
 			Sprite cSprite = new Sprite(PlayScreen.atlas.findRegion("evilWatermelon"));
-			Crusher c = new Crusher(cSprite, game.levelHandler.explosionRegions, new Rectangle(x, y, enemySize.x, enemySize.y), enemySpeed);
+			Crusher c = new Crusher(cSprite, BunnehStormGame.game.levelHandler.explosionRegions, new Rectangle(x, y, enemySize.x, enemySize.y), enemySpeed);
 			c.setHealth(enemyHealth);
 			if(enemyTarget != null) {
 				cSprite.setColor(Color.YELLOW);
@@ -101,16 +100,16 @@ public class EnemySpawner {
 				c.setFollowTarget(enemyFollowTarget);
 				c.setFollowTargetLimit(distanceToTargetLimit);
 			}
-			game.goHandler.addEnemy(c);
+			BunnehStormGame.game.goHandler.addEnemy(c);
 			break;
 		case Sniper:
 			Sprite sSprite = new Sprite(PlayScreen.atlas.findRegion("evilWatermelon"));
-			SniperEnemy s = new SniperEnemy(sSprite, game.levelHandler.explosionRegions, x, y, enemySize.x, enemySize.y, enemySpeed);
+			SniperEnemy s = new SniperEnemy(sSprite, BunnehStormGame.game.levelHandler.explosionRegions, x, y, enemySize.x, enemySize.y, enemySpeed);
 			s.setBulletInterval(bulletInterval);
 			s.setBulletSpeed(bulletSpeed);
 			s.setTarget(enemyTarget);
 			s.setFireLimitOnY(fireLimitOnY);
-			game.goHandler.addEnemy(s);
+			BunnehStormGame.game.goHandler.addEnemy(s);
 			break;
 		default:
 			break;
