@@ -33,6 +33,7 @@ public class BunnehStormGame extends Game {
 
 	@Override
 	public void create() {
+		AssetManager.loadAll();
 		initializeGame();
 	}
 	

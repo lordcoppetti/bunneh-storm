@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -12,25 +11,23 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.bunneh.game.AssetManager;
 import com.bunneh.game.BunnehStormGame;
 import com.bunneh.game.InputAdapter;
-import com.bunneh.game.handlers.LevelHandler;
+import com.bunneh.game.AssetManager.GameMusic;
 import com.bunneh.game.objects.Floor;
 import com.bunneh.game.objects.Hud;
 import com.bunneh.game.objects.Player;
 import com.bunneh.game.utils.ParallaxBackground;
-import com.bunneh.game.utils.ParallaxLayer;
-import com.bunneh.game.utils.RegionComparator;
+import com.bunneh.game.utils.ParallaxLayer.TileMode;
 import com.bunneh.game.utils.TextureAtlasChiches;
 import com.bunneh.game.utils.TextureRegionParallaxLayer;
-import com.bunneh.game.utils.ParallaxLayer.TileMode;
 
 /*
  * This PlayScreen doesn't use box2d or any physics engine.
@@ -45,12 +42,7 @@ public class PlayScreen implements Screen {
 	private final float timestep = 1 / 60f;
 	private float timeAccum = 0f;
 
-	public static TextureAtlas atlas;
-	public static TextureAtlas explosionAtlas;
-
-
 	private BunnehStormGame game;
-	private Color backColor = new Color(0f, 0f, 0f, 1f);
 	private OrthographicCamera camera;
 	private OrthographicCamera pCamera = new OrthographicCamera(BunnehStormGame.V_WIDTH, BunnehStormGame.V_HEIGHT);
 	private SpriteBatch batch;
@@ -64,6 +56,7 @@ public class PlayScreen implements Screen {
 	private Floor floor;
 
 	private ParallaxBackground starfieldParallax;
+	private Texture starfield;
 	private Texture background;
 	private Texture moon;
 	
@@ -77,21 +70,11 @@ public class PlayScreen implements Screen {
 	public void show() {
 		// initialize common game objects
 		game.goHandler.initialize();
-
 		
-		// load the game assets
-		atlas = new TextureAtlas(Gdx.files.internal("assets.atlas"));
-		Array<AtlasRegion> assetsRegions = atlas.getRegions();
-		assetsRegions.sort(new RegionComparator());
-
-		explosionAtlas = new TextureAtlas(Gdx.files.internal("explosion.atlas"));
-		Array<AtlasRegion> explosionRegions = atlas.getRegions();
-		explosionRegions.sort(new RegionComparator());
-		
-		Array<AtlasRegion> idleRegions = TextureAtlasChiches.getRegions(atlas, "idle", "-", 1);
-		Array<AtlasRegion> shootingRegions = TextureAtlasChiches.getRegions(atlas, "shooting", "-", 0);
-		Array<AtlasRegion> runningRegions = TextureAtlasChiches.getRegions(atlas, "running", "-", 0);
-		Array<AtlasRegion> runningShootingRegions = TextureAtlasChiches.getRegions(atlas, "runningShooting", "-", 0);
+		Array<AtlasRegion> idleRegions = TextureAtlasChiches.getRegions(AssetManager.assetsAtlas, "idle", "-", 1);
+		Array<AtlasRegion> shootingRegions = TextureAtlasChiches.getRegions(AssetManager.assetsAtlas, "shooting", "-", 0);
+		Array<AtlasRegion> runningRegions = TextureAtlasChiches.getRegions(AssetManager.assetsAtlas, "running", "-", 0);
+		Array<AtlasRegion> runningShootingRegions = TextureAtlasChiches.getRegions(AssetManager.assetsAtlas, "runningShooting", "-", 0);
 
 		// initialize screen stuff
 		camera = new OrthographicCamera(BunnehStormGame.V_WIDTH, BunnehStormGame.V_HEIGHT);
@@ -111,11 +94,11 @@ public class PlayScreen implements Screen {
 		background.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
 		// the starfield background
-		Texture starfieldTex = new Texture(Gdx.files.internal("starfield-2.png"));
-		starfieldTex.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		starfield = new Texture(Gdx.files.internal("starfield-2.png"));
+		starfield.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
-		TextureRegion sfr1 = new TextureRegion(starfieldTex);
-		TextureRegion sfr2 = new TextureRegion(starfieldTex);
+		TextureRegion sfr1 = new TextureRegion(starfield);
+		TextureRegion sfr2 = new TextureRegion(starfield);
 		sfr2.scroll(2f, 2f);
 		sfr1.flip(false, true);
 		starfieldParallax = new ParallaxBackground();
@@ -174,6 +157,11 @@ public class PlayScreen implements Screen {
 
 		// create input multiplexer
 		createInput();
+
+		// play music
+		AssetManager.playMusic(GameMusic.LEVEL);
+		AssetManager.setMusicVolume(0.4f);
+		AssetManager.setSoundVolume(0.2f);
 	}
 
 	private void createInput() {
@@ -293,13 +281,13 @@ public class PlayScreen implements Screen {
 		game.goHandler.disposeAll();
 		floor.dispose();
 		game.levelHandler.dispose();
+		if(starfield != null) starfield.dispose();
 		if(background != null) background.dispose();
 		if(moon != null) moon.dispose();
 		if(debugRender != null) debugRender.dispose();
 		if(font != null) font.dispose();
 		batch.dispose();
-		atlas.dispose();
-		explosionAtlas.dispose();
+		AssetManager.stopMusic();
 		Gdx.input.setInputProcessor(null);
 	}
 	

@@ -13,7 +13,9 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.bunneh.game.AssetManager;
 import com.bunneh.game.BunnehStormGame;
+import com.bunneh.game.AssetManager.GameSound;
 import com.bunneh.game.tween.SpriteAccessor;
 import com.bunneh.game.utils.MathChiches;
 
@@ -118,6 +120,7 @@ public class Crusher extends Enemy {
 	public boolean collided(GameObject target) {
 		if(explode) return false;
 		if(target instanceof Player) {
+			AssetManager.playSound(GameSound.WMELONEXPLOSION);
 			Player player = (Player) target;
 			if(!player.isInvulnerable()) {
 				player.setLives(player.getLives()-1);
@@ -136,6 +139,7 @@ public class Crusher extends Enemy {
 			if(!b.isAllyBullet()) return false;
 			health -= b.getAttackPower();
 			if(health <= 0) {
+				AssetManager.playSound(GameSound.WMELONEXPLOSION);
 				explode = true;
 				Player player = BunnehStormGame.game.levelHandler.getPlayer();
 				player.addKillCount();

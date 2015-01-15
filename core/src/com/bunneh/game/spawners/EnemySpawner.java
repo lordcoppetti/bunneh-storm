@@ -1,6 +1,5 @@
 package com.bunneh.game.spawners;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
@@ -8,11 +7,11 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.bunneh.game.AssetManager;
 import com.bunneh.game.BunnehStormGame;
 import com.bunneh.game.objects.Crusher;
 import com.bunneh.game.objects.GameObject;
 import com.bunneh.game.objects.SniperEnemy;
-import com.bunneh.game.screens.PlayScreen;
 
 public class EnemySpawner {
 
@@ -51,9 +50,6 @@ public class EnemySpawner {
 	private float topBoundary;
 	private boolean done = false;
 	
-	// watermelon explosion regions
-	private Array<AtlasRegion> explosionRegions;
-	
 	public EnemySpawner(EnemyType type, float spawnInterval, Vector2 enemySize) {
 		this(type, spawnInterval, defaultLeftBoundary, defaultRightBoundary, 
 				enemySize, 15, defaultEnemySpeed);
@@ -91,8 +87,8 @@ public class EnemySpawner {
 		y = y + enemySize.y;
 		switch (type) {
 		case Obstacle:
-			Sprite cSprite = new Sprite(PlayScreen.atlas.findRegion("evilWatermelon"));
-			Crusher c = new Crusher(cSprite, BunnehStormGame.game.levelHandler.explosionRegions, new Rectangle(x, y, enemySize.x, enemySize.y), enemySpeed);
+			Sprite cSprite = new Sprite(AssetManager.assetsAtlas.findRegion("evilWatermelon"));
+			Crusher c = new Crusher(cSprite, AssetManager.getExplosionRegions(), new Rectangle(x, y, enemySize.x, enemySize.y), enemySpeed);
 			c.setHealth(enemyHealth);
 			if(enemyTarget != null) {
 				cSprite.setColor(Color.YELLOW);
@@ -103,8 +99,8 @@ public class EnemySpawner {
 			BunnehStormGame.game.goHandler.addEnemy(c);
 			break;
 		case Sniper:
-			Sprite sSprite = new Sprite(PlayScreen.atlas.findRegion("evilWatermelon"));
-			SniperEnemy s = new SniperEnemy(sSprite, BunnehStormGame.game.levelHandler.explosionRegions, x, y, enemySize.x, enemySize.y, enemySpeed);
+			Sprite sSprite = new Sprite(AssetManager.assetsAtlas.findRegion("evilWatermelon"));
+			SniperEnemy s = new SniperEnemy(sSprite, AssetManager.getExplosionRegions(), x, y, enemySize.x, enemySize.y, enemySpeed);
 			s.setBulletInterval(bulletInterval);
 			s.setBulletSpeed(bulletSpeed);
 			s.setTarget(enemyTarget);
@@ -223,10 +219,6 @@ public class EnemySpawner {
 	public void setFireLimitOnY(float yLimit) {
 		this.fireLimitOnY = yLimit;
 		
-	}
-	
-	public void setEnemyExplosionAnimation(Array<AtlasRegion> regions) {
-		this.explosionRegions = regions;
 	}
 
 }

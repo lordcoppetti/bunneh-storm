@@ -4,7 +4,6 @@ import aurelienribon.tweenengine.Timeline;
 import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenManager;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -13,6 +12,8 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.bunneh.game.AssetManager;
+import com.bunneh.game.AssetManager.GameSound;
 import com.bunneh.game.BunnehStormGame;
 import com.bunneh.game.screens.PlayScreen;
 import com.bunneh.game.tween.SpriteAccessor;
@@ -76,9 +77,10 @@ public class SniperEnemy extends Enemy {
 		if(rect.y <= fireYlimit) return;
 		bulletTimer += delta;
 		if(bulletTimer >= bulletInterval) {
+			AssetManager.playSound(GameSound.WMELONGUN);
 			Rectangle targetRect = target.getRect();
 			float angle = (float) MathChiches.getAngle(rect.x, rect.y, (targetRect.x+targetRect.width/2), (targetRect.y+targetRect.height/2));
-			Sprite bSprite = new Sprite(PlayScreen.atlas.findRegion("watermelonBullet"));
+			Sprite bSprite = new Sprite(AssetManager.assetsAtlas.findRegion("watermelonBullet"));
 			Bullet b = new Bullet(bSprite, bulletPower, rect.x+rect.width/2, rect.y, angle, bulletSpeed, 4f, 9f);
 			b.setAllyBullet(false);
 			BunnehStormGame.game.goHandler.addEnemyBullet(b);
@@ -128,6 +130,7 @@ public class SniperEnemy extends Enemy {
 	public boolean collided(GameObject target) {
 		if(explode) return false;
 		if(target instanceof Player) {
+			AssetManager.playSound(GameSound.WMELONEXPLOSION);
 			Player player = (Player) target;
 			if(!player.isInvulnerable()) {
 				player.setLives(player.getLives()-1);
@@ -146,6 +149,7 @@ public class SniperEnemy extends Enemy {
 			if(!b.isAllyBullet()) return false;
 			health -= b.getAttackPower();
 			if(health <= 0) {
+				AssetManager.playSound(GameSound.WMELONEXPLOSION);
 				explode = true;
 				Player player = BunnehStormGame.game.levelHandler.getPlayer();
 				player.addKillCount();

@@ -6,21 +6,15 @@ import aurelienribon.tweenengine.TweenManager;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-import com.bunneh.game.BunnehStormGame;
 import com.bunneh.game.Level;
 import com.bunneh.game.objects.Player;
-import com.bunneh.game.screens.PlayScreen;
 import com.bunneh.game.spawners.EnemySpawner;
 import com.bunneh.game.spawners.EnemySpawner.EnemyType;
 import com.bunneh.game.tween.SpriteAccessor;
-import com.bunneh.game.utils.TextureAtlasChiches;
 
 public class LevelHandler {
-
-	private BunnehStormGame game;
 
 	private static final int levelAmount = 99;
 	private static final int createBy = 3;
@@ -40,15 +34,11 @@ public class LevelHandler {
 
 	private TweenManager tm = new TweenManager();
 
-	// watermelon explosion regions
-	public Array<AtlasRegion> explosionRegions;
-
 	public LevelHandler() {}
 	
 	public void initializeLevelHandler(Player player) {
 		this.player = player;
 		levelArray = new Array<Level>(levelAmount);
-		explosionRegions = TextureAtlasChiches.getRegions(PlayScreen.explosionAtlas, "watermelonExplosion", "-", 0);
 	}
 
 

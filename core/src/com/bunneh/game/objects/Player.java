@@ -6,7 +6,6 @@ import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenCallback;
 import aurelienribon.tweenengine.TweenManager;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
@@ -17,7 +16,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.bunneh.game.AssetManager;
 import com.bunneh.game.BunnehStormGame;
+import com.bunneh.game.AssetManager.GameSound;
 import com.bunneh.game.screens.PlayScreen;
 import com.bunneh.game.tween.SpriteAccessor;
 import com.bunneh.game.utils.MathChiches;
@@ -38,7 +39,7 @@ public class Player extends GameObject {
 	private float lerpAlpha = 40f;
 	
 	// stats
-	private int lives = 3;
+	private int lives = 99;
 	private int attackPower = 5;
 	private int attackPowerMax = 100;
 	private int attackPowerIncreaseAmount = 5;
@@ -219,8 +220,9 @@ public class Player extends GameObject {
 	}
 
 	private void fire() {
+		AssetManager.playSound(GameSound.BUNNEHGUN);
 		fireRequested = false;
-		Sprite bSprite = new Sprite(PlayScreen.atlas.findRegion("carrotBullet"));
+		Sprite bSprite = new Sprite(AssetManager.assetsAtlas.findRegion("carrotBullet"));
 		Bullet newBullet = new Bullet(bSprite, attackPower, rect.x + (rect.width/2), rect.y + rect.height, 90f, bulletSpeed, 4f, 9f);
 		BunnehStormGame.game.goHandler.addPlayerBullet(newBullet);
 	}
