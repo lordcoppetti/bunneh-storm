@@ -159,6 +159,7 @@ public class SniperEnemy extends Enemy {
 			return true;
 		}
 		if(target instanceof Floor) {
+			AssetManager.playSound(GameSound.WMELONEXPLOSION);
 			explode = true;
 			return true;
 		}
