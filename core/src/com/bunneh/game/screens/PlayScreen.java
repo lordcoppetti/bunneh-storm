@@ -25,8 +25,12 @@ import com.bunneh.game.handlers.LevelHandler;
 import com.bunneh.game.objects.Floor;
 import com.bunneh.game.objects.Hud;
 import com.bunneh.game.objects.Player;
+import com.bunneh.game.utils.ParallaxBackground;
+import com.bunneh.game.utils.ParallaxLayer;
 import com.bunneh.game.utils.RegionComparator;
 import com.bunneh.game.utils.TextureAtlasChiches;
+import com.bunneh.game.utils.TextureRegionParallaxLayer;
+import com.bunneh.game.utils.ParallaxLayer.TileMode;
 
 /*
  * This PlayScreen doesn't use box2d or any physics engine.
@@ -48,6 +52,7 @@ public class PlayScreen implements Screen {
 	private BunnehStormGame game;
 	private Color backColor = new Color(0f, 0f, 0f, 1f);
 	private OrthographicCamera camera;
+	private OrthographicCamera pCamera = new OrthographicCamera(BunnehStormGame.V_WIDTH, BunnehStormGame.V_HEIGHT);
 	private SpriteBatch batch;
 	private BitmapFont font;
 	//private ObjectSpawnerContainer esc;
@@ -58,6 +63,7 @@ public class PlayScreen implements Screen {
 	// custom game objects for this screen
 	private Floor floor;
 
+	private ParallaxBackground starfieldParallax;
 	private Texture background;
 	private Texture moon;
 	
@@ -99,9 +105,31 @@ public class PlayScreen implements Screen {
 		// for debug rendering
 		if(game.debugRender) debugRender = new ShapeRenderer();
 		
+
 		// the galaxy background
 		background = new Texture(Gdx.files.internal("galaxy.png"));
 		background.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+
+		// the starfield background
+		Texture starfieldTex = new Texture(Gdx.files.internal("starfield-2.png"));
+		starfieldTex.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+
+		TextureRegion sfr1 = new TextureRegion(starfieldTex);
+		TextureRegion sfr2 = new TextureRegion(starfieldTex);
+		sfr2.scroll(2f, 2f);
+		sfr1.flip(false, true);
+		starfieldParallax = new ParallaxBackground();
+		TextureRegionParallaxLayer p1 = new TextureRegionParallaxLayer(sfr1, 
+				BunnehStormGame.V_WIDTH, BunnehStormGame.V_HEIGHT*3, new Vector2(0f, 0.3f));
+		TextureRegionParallaxLayer p2 = new TextureRegionParallaxLayer(sfr2, 
+				BunnehStormGame.V_WIDTH+6f, BunnehStormGame.V_HEIGHT*3, new Vector2(0f, 0.6f));
+		p1.setTileModeY(TileMode.repeat);
+		p1.setTileModeX(TileMode.single);
+		p2.setTileModeY(TileMode.repeat);
+		p2.setTileModeX(TileMode.single);
+		p1.setPadLeft(-BunnehStormGame.V_WIDTH/2);
+		p2.setPadLeft(-(BunnehStormGame.V_WIDTH/2)-3f);
+		starfieldParallax.addLayers(p1, p2);
 
 		
 		// create the floor (custom game object)
@@ -202,6 +230,14 @@ public class PlayScreen implements Screen {
 		batch.begin();
 		batch.draw(background, -(BunnehStormGame.V_WIDTH/2)-9, -BunnehStormGame.V_HEIGHT/2, 
 				BunnehStormGame.V_WIDTH+18, BunnehStormGame.V_HEIGHT);
+
+		// parallax starfield
+		pCamera.position.y += 0.3f;
+		pCamera.update();
+		batch.setProjectionMatrix(pCamera.combined);
+		starfieldParallax.draw(pCamera, batch);
+		batch.setProjectionMatrix(camera.combined);
+
 		game.levelHandler.getBirdman().draw(batch);
 		floor.render(batch);
 		game.levelHandler.getPlayer().render(batch);
@@ -228,6 +264,7 @@ public class PlayScreen implements Screen {
 		// Somehow keep aspect ratio...
 		float aspectRatio = (float) width / (float) height;
 		camera = new OrthographicCamera(BunnehStormGame.V_WIDTH * aspectRatio, BunnehStormGame.V_HEIGHT);
+		pCamera = new OrthographicCamera(BunnehStormGame.V_WIDTH * aspectRatio, BunnehStormGame.V_HEIGHT);
 	}
 
 	@Override
