@@ -160,7 +160,7 @@ public class PlayScreen implements Screen {
 
 		// play music
 		AssetManager.playMusic(GameMusic.LEVEL);
-		AssetManager.setMusicVolume(0.4f);
+		AssetManager.setMusicVolume(0.5f);
 		AssetManager.setSoundVolume(0.2f);
 	}
 

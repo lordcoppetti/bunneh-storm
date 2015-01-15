@@ -39,7 +39,7 @@ public class Player extends GameObject {
 	private float lerpAlpha = 40f;
 	
 	// stats
-	private int lives = 99;
+	private int lives = 3;
 	private int attackPower = 5;
 	private int attackPowerMax = 100;
 	private int attackPowerIncreaseAmount = 5;
