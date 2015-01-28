@@ -30,7 +30,8 @@ public class GameOverScreen implements Screen {
 	
 	@Override
 	public void show() {
-		font = new BitmapFont();
+		font = new BitmapFont(Gdx.files.internal("fonts/lmono.fnt"));
+		font.setScale(0.6f);
 		batch = new SpriteBatch();
 
 		tweenM = new TweenManager();
@@ -75,8 +76,8 @@ public class GameOverScreen implements Screen {
 
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
-		font.draw(batch, "Game Over", -BunnehStormGame.V_WIDTH/8, BunnehStormGame.V_HEIGHT/3.5f);
-		font.draw(batch, "press space to restart level", -BunnehStormGame.V_WIDTH/3.6f, 0);
+		font.draw(batch, "Game Over", -BunnehStormGame.V_WIDTH/6, BunnehStormGame.V_HEIGHT/3.5f);
+		font.draw(batch, "press space to continue", -BunnehStormGame.V_WIDTH/2.3f, -BunnehStormGame.V_HEIGHT/12);
 		batch.end();
 		
 		if(Gdx.input.isKeyPressed(Keys.SPACE)) {

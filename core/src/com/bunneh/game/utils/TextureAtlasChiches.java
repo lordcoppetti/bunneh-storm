@@ -4,6 +4,10 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.utils.Array;
 
+/**
+ * @author Diego Coppetti
+ *
+ */
 public class TextureAtlasChiches {
 	
 	public static Array<AtlasRegion> getRegions(TextureAtlas atlas, String namePrefix, String separator, int startIndex) {

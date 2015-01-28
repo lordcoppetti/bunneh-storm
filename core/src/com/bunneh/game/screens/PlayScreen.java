@@ -79,11 +79,11 @@ public class PlayScreen implements Screen {
 		// initialize screen stuff
 		camera = new OrthographicCamera(BunnehStormGame.V_WIDTH, BunnehStormGame.V_HEIGHT);
 		batch = new SpriteBatch();
-		font = new BitmapFont();
-		font.setScale(0.8f);
+		font = new BitmapFont(Gdx.files.internal("fonts/lmono.fnt"));
+		font.setScale(0.4f);
 		hud = new Hud(font);
-		hud.setPlayerLivesPos(new Vector2(-BunnehStormGame.V_WIDTH/2.2f, -BunnehStormGame.V_HEIGHT/2.2f));
-		hud.setPlayerAtkPowPos(new Vector2(BunnehStormGame.V_WIDTH/3.5f, hud.getPlayerLivesPos().y));
+		hud.setPlayerLivesPos(new Vector2(-BunnehStormGame.V_WIDTH/2f, -BunnehStormGame.V_HEIGHT/2.2f));
+		hud.setPlayerAtkPowPos(new Vector2(BunnehStormGame.V_WIDTH/4.2f, hud.getPlayerLivesPos().y));
 		
 		// for debug rendering
 		if(game.debugRender) debugRender = new ShapeRenderer();
@@ -195,7 +195,6 @@ public class PlayScreen implements Screen {
 			return;
 		}
 		
-		//esc.update(delta);
 		timeAccum += delta;
 		while(timeAccum >= timestep) {
 			// update level handler

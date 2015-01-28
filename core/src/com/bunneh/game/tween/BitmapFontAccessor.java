@@ -4,6 +4,10 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 import aurelienribon.tweenengine.TweenAccessor;
 
+/**
+ * @author Diego Coppetti
+ *
+ */
 public class BitmapFontAccessor implements TweenAccessor<BitmapFont> {
 	
 	public static final int ALPHA = 0;

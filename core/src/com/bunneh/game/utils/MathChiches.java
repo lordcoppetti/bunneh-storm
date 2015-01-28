@@ -3,6 +3,10 @@ package com.bunneh.game.utils;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
+/**
+ * @author Diego Coppetti
+ *
+ */
 public class MathChiches {
 	
 	private MathChiches() {}
