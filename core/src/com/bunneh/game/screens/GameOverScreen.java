@@ -8,6 +8,10 @@ import aurelienribon.tweenengine.TweenManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.ControllerAdapter;
+import com.badlogic.gdx.controllers.Controllers;
+import com.badlogic.gdx.controllers.mappings.Ouya;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -25,11 +29,56 @@ public class GameOverScreen implements Screen {
 	private OrthographicCamera camera = new OrthographicCamera(BunnehStormGame.V_WIDTH, BunnehStormGame.V_HEIGHT);
 	private boolean spaceNeedsRelease;
 	private boolean ready = false;
+	private String continueButton = "space";
+	private String continueString;
+	private float continueStringX = -BunnehStormGame.V_WIDTH/2.3f; 
+	private ControllerAdapter controlAdapter = null;
 	
 	private TweenManager tweenM;
 	
 	@Override
 	public void show() {
+		if(Ouya.runningOnOuya) {
+			continueButton = "O";
+			continueStringX = -BunnehStormGame.V_WIDTH/3f; 
+			controlAdapter = new ControllerAdapter() {
+
+				@Override
+				public boolean buttonDown(Controller controller, int buttonIndex) {
+					if(ready && buttonIndex == Ouya.BUTTON_O) {
+						BunnehStormGame.game.initializeGame();
+					}
+					return false;
+				};
+			};
+			for (Controller controller : Controllers.getControllers()) {
+				if(controller.getName().equals(Ouya.ID)) {
+					// Attach ouya controller
+					controller.addListener(controlAdapter);
+				}
+			}
+		} else {
+			if(Gdx.input.isKeyJustPressed(Keys.SPACE)) {
+				spaceNeedsRelease = true;
+			}
+			Gdx.input.setInputProcessor(new InputAdapter() {
+				@Override
+				public boolean keyDown(int keycode) {
+					if(keycode == Keys.SPACE && !spaceNeedsRelease && ready) {
+						BunnehStormGame.game.initializeGame();
+					}
+					return false;
+				}
+				@Override
+				public boolean keyUp(int keycode) {
+					if(keycode == Keys.SPACE) {
+						spaceNeedsRelease = false;
+					}
+					return false;
+				}
+			});
+		}
+		continueString = "Press " +  continueButton + " to continue";
 		font = new BitmapFont(Gdx.files.internal("fonts/lmono.fnt"));
 		font.setScale(0.6f);
 		batch = new SpriteBatch();
@@ -37,25 +86,6 @@ public class GameOverScreen implements Screen {
 		tweenM = new TweenManager();
 		Tween.registerAccessor(BitmapFont.class, new BitmapFontAccessor());
 
-		if(Gdx.input.isKeyJustPressed(Keys.SPACE)) {
-			spaceNeedsRelease = true;
-		}
-		Gdx.input.setInputProcessor(new InputAdapter() {
-			@Override
-			public boolean keyDown(int keycode) {
-				if(keycode == Keys.SPACE && !spaceNeedsRelease && ready) {
-					BunnehStormGame.game.initializeGame();
-				}
-				return false;
-			}
-			@Override
-			public boolean keyUp(int keycode) {
-				if(keycode == Keys.SPACE) {
-					spaceNeedsRelease = false;
-				}
-				return false;
-			}
-		});
 		
 		// create tween animations
 		Tween.set(font, BitmapFontAccessor.ALPHA).target(0).start(tweenM);
@@ -77,12 +107,9 @@ public class GameOverScreen implements Screen {
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
 		font.draw(batch, "Game Over", -BunnehStormGame.V_WIDTH/6, BunnehStormGame.V_HEIGHT/3.5f);
-		font.draw(batch, "press space to continue", -BunnehStormGame.V_WIDTH/2.3f, -BunnehStormGame.V_HEIGHT/12);
+		font.draw(batch, continueString, continueStringX, -BunnehStormGame.V_HEIGHT/12);
 		batch.end();
 		
-		if(Gdx.input.isKeyPressed(Keys.SPACE)) {
-			
-		}
 	}
 
 	@Override
@@ -112,6 +139,13 @@ public class GameOverScreen implements Screen {
 	public void dispose() {
 		font.dispose();
 		batch.dispose();
+		if(Ouya.runningOnOuya) {
+			for (Controller controller : Controllers.getControllers()) {
+				if(controller.getName().equals(Ouya.ID)) {
+					controller.removeListener(controlAdapter);
+				}
+			}
+		}
 	}
 
 }

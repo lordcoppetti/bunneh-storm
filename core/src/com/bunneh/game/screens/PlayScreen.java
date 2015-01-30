@@ -4,6 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.ControllerAdapter;
+import com.badlogic.gdx.controllers.Controllers;
+import com.badlogic.gdx.controllers.mappings.Ouya;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -18,9 +22,9 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.bunneh.game.AssetManager;
+import com.bunneh.game.AssetManager.GameMusic;
 import com.bunneh.game.BunnehStormGame;
 import com.bunneh.game.InputAdapter;
-import com.bunneh.game.AssetManager.GameMusic;
 import com.bunneh.game.objects.Floor;
 import com.bunneh.game.objects.Hud;
 import com.bunneh.game.objects.Player;
@@ -59,6 +63,8 @@ public class PlayScreen implements Screen {
 	private Texture starfield;
 	private Texture background;
 	private Texture moon;
+	
+	private ControllerAdapter controlAdapter = null;
 	
 	public PlayScreen(BunnehStormGame game) {
 		gameOver = false;
@@ -165,23 +171,70 @@ public class PlayScreen implements Screen {
 	}
 
 	private void createInput() {
-		Gdx.input.setInputProcessor(new InputMultiplexer(
-				new InputAdapter() {
-					@Override
-					public boolean keyDown(int keycode) {
-						if(keycode == Keys.A) game.levelHandler.getPlayer().moveLeft(true);
-						if(keycode == Keys.D) game.levelHandler.getPlayer().moveRight(true);
-						if(keycode == Keys.SPACE) game.levelHandler.getPlayer().requestFire();
-						return true;
-					}
-					@Override
-					public boolean keyUp(int keycode) {
-						if(keycode == Keys.A) game.levelHandler.getPlayer().moveLeft(false);
-						if(keycode == Keys.D) game.levelHandler.getPlayer().moveRight(false);
-						return true;
-					}
+		if(Ouya.runningOnOuya) {
+			for (Controller controller : Controllers.getControllers()) {
+				if(controller.getName().equals(Ouya.ID)) {
+					// Attach ouya controller
+					controlAdapter = new ControllerAdapter() {
+						@Override
+						public boolean buttonDown(Controller controller, int buttonIndex) {
+							if(buttonIndex == Ouya.BUTTON_DPAD_LEFT) game.levelHandler.getPlayer().moveLeft(true);
+							if(buttonIndex == Ouya.BUTTON_DPAD_RIGHT) game.levelHandler.getPlayer().moveRight(true);
+							if(buttonIndex == Ouya.BUTTON_O) game.levelHandler.getPlayer().requestFire();
+							return false;
+						};
+						
+						@Override
+						public boolean axisMoved(Controller controller,
+								int axisIndex, float value) {
+							if(axisIndex == Ouya.AXIS_LEFT_X && value <= -0.6f) {
+								game.levelHandler.getPlayer().moveLeft(true);
+							}
+							if(axisIndex == Ouya.AXIS_LEFT_X && value >= 0.6f) {
+								game.levelHandler.getPlayer().moveRight(true);
+							}
+							if(axisIndex == Ouya.AXIS_LEFT_X && value >= -0.6 && value <= 0.6) {
+								game.levelHandler.getPlayer().moveRight(false);
+								game.levelHandler.getPlayer().moveLeft(false);
+							}
+							return false;
+						}
+						
+						@Override
+						public boolean buttonUp(Controller controller, int buttonIndex) {
+							if(buttonIndex == Ouya.BUTTON_DPAD_LEFT) game.levelHandler.getPlayer().moveLeft(false);
+							if(buttonIndex == Ouya.BUTTON_DPAD_RIGHT) game.levelHandler.getPlayer().moveRight(false);
+							return false;
+						};
+					};
+					controller.addListener(controlAdapter);
+					break;
 				}
-		));
+			}
+			
+		} else {
+			Gdx.input.setInputProcessor(new InputMultiplexer(
+					new InputAdapter() {
+						@Override
+						public boolean keyDown(int keycode) {
+							if(keycode == Keys.A) game.levelHandler.getPlayer().moveLeft(true);
+							if(keycode == Keys.D) game.levelHandler.getPlayer().moveRight(true);
+							if(keycode == Keys.LEFT) game.levelHandler.getPlayer().moveLeft(true);
+							if(keycode == Keys.RIGHT) game.levelHandler.getPlayer().moveRight(true);
+							if(keycode == Keys.SPACE) game.levelHandler.getPlayer().requestFire();
+							return true;
+						}
+						@Override
+						public boolean keyUp(int keycode) {
+							if(keycode == Keys.A) game.levelHandler.getPlayer().moveLeft(false);
+							if(keycode == Keys.D) game.levelHandler.getPlayer().moveRight(false);
+							if(keycode == Keys.LEFT) game.levelHandler.getPlayer().moveLeft(false);
+							if(keycode == Keys.RIGHT) game.levelHandler.getPlayer().moveRight(false);
+							return true;
+						}
+					}
+			));
+		}
 	}
 
 	@Override
@@ -288,6 +341,13 @@ public class PlayScreen implements Screen {
 		batch.dispose();
 		AssetManager.stopMusic();
 		Gdx.input.setInputProcessor(null);
+		if(Ouya.runningOnOuya) {
+			for (Controller controller : Controllers.getControllers()) {
+				if(controller.getName().equals(Ouya.ID)) {
+					controller.removeListener(controlAdapter);
+				}
+			}
+		}
 	}
 	
 	public static void setGameOver(boolean over) {
