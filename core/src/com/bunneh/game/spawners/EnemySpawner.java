@@ -22,6 +22,7 @@ public class EnemySpawner {
 
 	private static float defaultLeftBoundary = (-BunnehStormGame.V_WIDTH/2);
 	private static float defaultRightBoundary = (BunnehStormGame.V_WIDTH/3.5f);
+
 	private static float defaultTopBoundary = BunnehStormGame.V_HEIGHT/2;
 	private static float defaultEnemySpeed = 2f;
 

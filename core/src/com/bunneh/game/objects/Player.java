@@ -61,10 +61,10 @@ public class Player extends GameObject {
 	private TweenManager tm = new TweenManager();
 	private boolean flashingTweenOn = false;
 	private boolean doneTweenOn = false;
-	private Animation idle;
-	private Animation shooting;
-	private Animation running;
-	private Animation runningShooting;
+	private Animation<TextureRegion> idle;
+	private Animation<TextureRegion> shooting;
+	private Animation<TextureRegion> running;
+	private Animation<TextureRegion> runningShooting;
 	private float animationTime = 0f;
 	private Sprite sprite;
 	private float spriteXoffset;

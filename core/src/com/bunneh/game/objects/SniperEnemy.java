@@ -3,21 +3,18 @@ package com.bunneh.game.objects;
 import aurelienribon.tweenengine.Timeline;
 import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenManager;
-
+import com.badlogic.gdx.graphics.g2d.*;
+import com.bunneh.game.AssetManager;
+import com.bunneh.game.AssetManager.GameSound;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-import com.bunneh.game.AssetManager;
-import com.bunneh.game.AssetManager.GameSound;
 import com.bunneh.game.BunnehStormGame;
 import com.bunneh.game.screens.PlayScreen;
 import com.bunneh.game.tween.SpriteAccessor;
 import com.bunneh.game.utils.MathChiches;
+
 
 public class SniperEnemy extends Enemy {
 	
@@ -35,12 +32,12 @@ public class SniperEnemy extends Enemy {
 
 	private Sprite sprite;
 	private float animationTimer = 0f;
-	private Animation explodeAnimation;
+	private Animation<TextureRegion> explodeAnimation;
 	private boolean explode = false;
 
 	private TweenManager tm = new TweenManager();
 	
-	public SniperEnemy(Sprite sprite, Array<AtlasRegion> explosionRegions, float x, float y, float width, float height, float enemySpeed) {
+	public SniperEnemy(Sprite sprite, Array<TextureAtlas.AtlasRegion> explosionRegions, float x, float y, float width, float height, float enemySpeed) {
 		super(new Rectangle(x, y, width, height));
 		this.speed = enemySpeed;
 		this.health = 15;

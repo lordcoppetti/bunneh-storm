@@ -80,7 +80,7 @@ public class GameOverScreen implements Screen {
 		}
 		continueString = "Press " +  continueButton + " to continue";
 		font = new BitmapFont(Gdx.files.internal("fonts/lmono.fnt"));
-		font.setScale(0.6f);
+		font.getData().setScale(0.6f);
 		batch = new SpriteBatch();
 
 		tweenM = new TweenManager();

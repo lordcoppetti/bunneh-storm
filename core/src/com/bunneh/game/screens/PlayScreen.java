@@ -86,7 +86,7 @@ public class PlayScreen implements Screen {
 		camera = new OrthographicCamera(BunnehStormGame.V_WIDTH, BunnehStormGame.V_HEIGHT);
 		batch = new SpriteBatch();
 		font = new BitmapFont(Gdx.files.internal("fonts/lmono.fnt"));
-		font.setScale(0.4f);
+		font.getData().setScale(0.4f);
 		hud = new Hud(font);
 		hud.setPlayerLivesPos(new Vector2(-BunnehStormGame.V_WIDTH/2f, -BunnehStormGame.V_HEIGHT/2.2f));
 		hud.setPlayerAtkPowPos(new Vector2(BunnehStormGame.V_WIDTH/4.2f, hud.getPlayerLivesPos().y));

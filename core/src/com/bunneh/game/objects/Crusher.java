@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -29,7 +30,7 @@ public class Crusher extends Enemy {
 
 	private Sprite sprite;
 	private float animationTimer = 0f;
-	private Animation explodeAnimation;
+	private Animation<TextureRegion> explodeAnimation;
 	private boolean explode = false;
 
 	private TweenManager tm = new TweenManager();

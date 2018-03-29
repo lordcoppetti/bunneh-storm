@@ -7,13 +7,15 @@ import com.bunneh.game.BunnehStormGame;
 
 public class HtmlLauncher extends GwtApplication {
 
-        @Override
-        public GwtApplicationConfiguration getConfig () {
-                return new GwtApplicationConfiguration(600, 600);
-        }
+    @Override
+    public GwtApplicationConfiguration getConfig () {
+        GwtApplicationConfiguration gwtac = new GwtApplicationConfiguration(600, 600);
+        return gwtac;
+    }
 
-        @Override
-        public ApplicationListener getApplicationListener () {
-                return new BunnehStormGame();
-        }
+    @Override
+    public ApplicationListener createApplicationListener () {
+        return new BunnehStormGame();
+    }
 }
+

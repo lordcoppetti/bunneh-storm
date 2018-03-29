@@ -27,7 +27,7 @@ public class MainMenuScreen implements Screen {
 	@Override
 	public void show() {
 		font = new BitmapFont();
-		font.scale(2f);
+		font.getData().setScale(2f);
 		gameLogoTexture = new Texture(Gdx.files.internal("badlogic.jpg"));
 		batch = new SpriteBatch();
 	}
